@@ -27,6 +27,9 @@ export function getBuiltInDictionaryAction(
     enabled: state.enabled,
     providerId: state.providerId,
     ...(state.notebaseConnection ? { notebaseConnection: state.notebaseConnection } : {}),
+    ...(state.googleSheetsConnection
+      ? { googleSheetsConnection: state.googleSheetsConnection }
+      : {}),
   }
 }
 
@@ -66,6 +69,9 @@ function toBuiltInDictionaryState(
     enabled: action.enabled !== false,
     providerId: action.providerId,
     ...(action.notebaseConnection ? { notebaseConnection: action.notebaseConnection } : {}),
+    ...(action.googleSheetsConnection
+      ? { googleSheetsConnection: action.googleSheetsConnection }
+      : {}),
   }
 }
 
@@ -95,7 +101,10 @@ export function patchSelectionToolbarAction(
   selectionToolbar: SelectionToolbarConfig,
   actionId: string,
   patch: Partial<
-    Pick<SelectionToolbarCustomAction, "enabled" | "providerId" | "notebaseConnection">
+    Pick<
+      SelectionToolbarCustomAction,
+      "enabled" | "providerId" | "notebaseConnection" | "googleSheetsConnection"
+    >
   >,
 ): SelectionToolbarConfig {
   const action = findSelectionToolbarAction(selectionToolbar, actionId)

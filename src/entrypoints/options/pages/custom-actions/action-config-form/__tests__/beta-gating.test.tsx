@@ -45,9 +45,9 @@ vi.mock("../output-schema-field", () => ({
   ReadOnlyOutputSchemaField: () => <div>ReadOnlyOutputSchemaField</div>,
 }))
 
-vi.mock("../notebase-connection-field", () => ({
-  NotebaseConnectionField: () => (
-    <div>{i18n.t("options.selectionToolbar.customActions.form.notebase.title")}</div>
+vi.mock("../google-sheets-connection-field", () => ({
+  GoogleSheetsConnectionField: () => (
+    <div>{i18n.t("options.selectionToolbar.customActions.form.googleSheets.title")}</div>
   ),
 }))
 
@@ -55,7 +55,7 @@ function cloneConfig(config: Config): Config {
   return JSON.parse(JSON.stringify(config)) as Config
 }
 
-describe("customActionConfigForm notebase availability", () => {
+describe("customActionConfigForm remote note sync availability", () => {
   it("renders built-in fields read-only and duplicates the complete action", async () => {
     const store = createStore()
     const config = cloneConfig(DEFAULT_CONFIG)
@@ -135,7 +135,7 @@ describe("customActionConfigForm notebase availability", () => {
     )
   })
 
-  it("shows the notebase connection field when beta experience is disabled", () => {
+  it("shows the Google Sheets connection field when beta experience is disabled", () => {
     const store = createStore()
     const config = cloneConfig(DEFAULT_CONFIG)
 
@@ -173,7 +173,7 @@ describe("customActionConfigForm notebase availability", () => {
     )
 
     expect(
-      screen.getByText(i18n.t("options.selectionToolbar.customActions.form.notebase.title")),
+      screen.getByText(i18n.t("options.selectionToolbar.customActions.form.googleSheets.title")),
     ).toBeInTheDocument()
   })
 

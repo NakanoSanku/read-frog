@@ -13,6 +13,14 @@ import type {
   EdgeTTSSynthesizeRequest,
   EdgeTTSSynthesizeWireResponse,
 } from "@/types/edge-tts"
+import type {
+  SaveGoogleSheetsRowsRequest,
+  SaveGoogleSheetsRowsResponse,
+} from "@/types/google-sheets"
+import type {
+  GoogleTranslateTTSSynthesizeRequest,
+  GoogleTranslateTTSSynthesizeWireResponse,
+} from "@/types/google-translate-tts"
 import type { ProxyRequest, ProxyResponse } from "@/types/proxy-fetch"
 import type {
   TTSPlaybackStartRequest,
@@ -39,6 +47,8 @@ interface ProtocolMap {
   >
   // config
   getInitialConfig: () => Config | null
+  // Google Sheets note sync
+  saveGoogleSheetsRows: (data: SaveGoogleSheetsRowsRequest) => Promise<SaveGoogleSheetsRowsResponse>
   // translation state
   getEnablePageTranslationByTabId: (data: { tabId: number }) => boolean | undefined
   getEnablePageTranslationFromContentScript: () => Promise<boolean>
@@ -150,6 +160,10 @@ interface ProtocolMap {
   edgeTtsSynthesize: (data: EdgeTTSSynthesizeRequest) => Promise<EdgeTTSSynthesizeWireResponse>
   edgeTtsListVoices: () => Promise<EdgeTTSVoice[]>
   edgeTtsHealthCheck: () => Promise<EdgeTTSHealthStatus>
+  // Google Translate TTS
+  googleTranslateTtsSynthesize: (
+    data: GoogleTranslateTTSSynthesizeRequest,
+  ) => Promise<GoogleTranslateTTSSynthesizeWireResponse>
   // tts playback
   ttsPlaybackPrepare: () => Promise<{ ok: true }>
   ttsPlaybackStart: (data: TTSPlaybackStartRequest) => Promise<TTSPlaybackStartResponse>

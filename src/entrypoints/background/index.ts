@@ -24,6 +24,8 @@ import {
   setUpDatabaseCleanup,
 } from "./db-cleanup"
 import { setupEdgeTTSMessageHandlers } from "./edge-tts"
+import { setupGoogleSheetsMessageHandlers } from "./google-sheets"
+import { setupGoogleTranslateTTSMessageHandlers } from "./google-translate-tts"
 import { setupIframeInjection } from "./iframe-injection"
 import { setupLLMGenerateTextMessageHandlers } from "./llm-generate-text"
 import { initMockData } from "./mock-data"
@@ -137,7 +139,9 @@ export default defineBackground({
 
     proxyFetch()
     setupNotebasePendingSaveProcessor(() => backgroundReady)
+    setupGoogleSheetsMessageHandlers()
     setupEdgeTTSMessageHandlers()
+    setupGoogleTranslateTTSMessageHandlers()
     setupLLMGenerateTextMessageHandlers()
     setupTTSPlaybackMessageHandlers()
     void initMockData()

@@ -31,10 +31,33 @@ export const selectionToolbarCustomActionNotebaseConnectionSchema = z.object({
   mappings: z.array(selectionToolbarCustomActionNotebaseMappingSchema),
 })
 
+export const selectionToolbarCustomActionGoogleSheetsMappingSchema = z.object({
+  id: z.string().nonempty(),
+  localFieldId: z.string().nonempty(),
+  columnIndex: z.number().int().nonnegative(),
+  columnNameSnapshot: z.string().trim().min(1),
+})
+
+export const selectionToolbarCustomActionGoogleSheetsAccountSchema = z.object({
+  id: z.string().trim().min(1),
+  email: z.email(),
+  image: z.url().nullable().optional(),
+})
+
+export const selectionToolbarCustomActionGoogleSheetsConnectionSchema = z.object({
+  spreadsheetId: z.string().trim().min(1),
+  spreadsheetNameSnapshot: z.string().trim().min(1),
+  sheetId: z.number().int().nonnegative(),
+  sheetNameSnapshot: z.string().trim().min(1),
+  connectedAccount: selectionToolbarCustomActionGoogleSheetsAccountSchema,
+  mappings: z.array(selectionToolbarCustomActionGoogleSheetsMappingSchema),
+})
+
 export const selectionToolbarBuiltInActionStateSchema = z.object({
   enabled: z.boolean(),
   providerId: z.string().nonempty(),
   notebaseConnection: selectionToolbarCustomActionNotebaseConnectionSchema.optional(),
+  googleSheetsConnection: selectionToolbarCustomActionGoogleSheetsConnectionSchema.optional(),
 })
 
 export const selectionToolbarBuiltInActionsSchema = z.object({
@@ -52,6 +75,7 @@ export const selectionToolbarCustomActionSchema = z
     prompt: z.string(),
     outputSchema: z.array(selectionToolbarCustomActionOutputFieldSchema).min(1),
     notebaseConnection: selectionToolbarCustomActionNotebaseConnectionSchema.optional(),
+    googleSheetsConnection: selectionToolbarCustomActionGoogleSheetsConnectionSchema.optional(),
   })
   .superRefine((action, ctx) => {
     const nameSet = new Set<string>()
@@ -69,6 +93,50 @@ export const selectionToolbarCustomActionSchema = z
       nameSet.add(field.name)
       outputFieldIds.add(field.id)
     })
+
+    const googleSheetsConnection = action.googleSheetsConnection
+    if (googleSheetsConnection) {
+      const googleSheetsMappingIdSet = new Set<string>()
+      const googleSheetsLocalFieldIdSet = new Set<string>()
+      const googleSheetsColumnIndexSet = new Set<number>()
+
+      googleSheetsConnection.mappings.forEach((mapping, index) => {
+        if (googleSheetsMappingIdSet.has(mapping.id)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate Google Sheets mapping id "${mapping.id}".`,
+            path: ["googleSheetsConnection", "mappings", index, "id"],
+          })
+        }
+        googleSheetsMappingIdSet.add(mapping.id)
+
+        if (!outputFieldIds.has(mapping.localFieldId)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Unknown output field id "${mapping.localFieldId}" in Google Sheets mapping.`,
+            path: ["googleSheetsConnection", "mappings", index, "localFieldId"],
+          })
+        }
+
+        if (googleSheetsLocalFieldIdSet.has(mapping.localFieldId)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate local field id "${mapping.localFieldId}" in Google Sheets mappings.`,
+            path: ["googleSheetsConnection", "mappings", index, "localFieldId"],
+          })
+        }
+        googleSheetsLocalFieldIdSet.add(mapping.localFieldId)
+
+        if (googleSheetsColumnIndexSet.has(mapping.columnIndex)) {
+          ctx.addIssue({
+            code: "custom",
+            message: `Duplicate column index "${mapping.columnIndex}" in Google Sheets mappings.`,
+            path: ["googleSheetsConnection", "mappings", index, "columnIndex"],
+          })
+        }
+        googleSheetsColumnIndexSet.add(mapping.columnIndex)
+      })
+    }
 
     const connection = action.notebaseConnection
     if (!connection) {
@@ -168,6 +236,15 @@ export type SelectionToolbarCustomActionNotebaseAccount = z.infer<
 >
 export type SelectionToolbarCustomActionNotebaseConnection = z.infer<
   typeof selectionToolbarCustomActionNotebaseConnectionSchema
+>
+export type SelectionToolbarCustomActionGoogleSheetsMapping = z.infer<
+  typeof selectionToolbarCustomActionGoogleSheetsMappingSchema
+>
+export type SelectionToolbarCustomActionGoogleSheetsAccount = z.infer<
+  typeof selectionToolbarCustomActionGoogleSheetsAccountSchema
+>
+export type SelectionToolbarCustomActionGoogleSheetsConnection = z.infer<
+  typeof selectionToolbarCustomActionGoogleSheetsConnectionSchema
 >
 export type SelectionToolbarBuiltInActionState = z.infer<
   typeof selectionToolbarBuiltInActionStateSchema

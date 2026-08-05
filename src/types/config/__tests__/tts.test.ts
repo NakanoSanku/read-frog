@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest"
+import { DEFAULT_TTS_CONFIG } from "@/utils/constants/tts"
 import {
   createDefaultTTSLanguageVoices,
   EDGE_TTS_FALLBACK_VOICE,
@@ -8,9 +9,34 @@ import {
   getDefaultTTSVoiceForLanguage,
   getEdgeTTSVoiceItem,
   isKnownEdgeTTSVoice,
+  ttsConfigSchema,
 } from "../tts"
 
 describe("tts config defaults", () => {
+  it("keeps legacy configs on Edge TTS and seeds Google Translate speed", () => {
+    const legacyConfig: Partial<typeof DEFAULT_TTS_CONFIG> = { ...DEFAULT_TTS_CONFIG }
+    delete legacyConfig.engine
+    delete legacyConfig.googleTranslateSpeed
+
+    const result = ttsConfigSchema.parse(legacyConfig)
+
+    expect(result.engine).toBe("edge-tts")
+    expect(result.googleTranslateSpeed).toBe("normal")
+  })
+
+  it("accepts Google Translate as a speech engine", () => {
+    expect(
+      ttsConfigSchema.parse({
+        ...DEFAULT_TTS_CONFIG,
+        engine: "google-translate",
+        googleTranslateSpeed: "slower",
+      }),
+    ).toMatchObject({
+      engine: "google-translate",
+      googleTranslateSpeed: "slower",
+    })
+  })
+
   it("uses Andrew Multilingual as the fallback/default US English voice", () => {
     expect(EDGE_TTS_FALLBACK_VOICE).toBe("en-US-AndrewMultilingualNeural")
     expect(getDefaultTTSVoiceForLanguage("eng")).toBe("en-US-AndrewMultilingualNeural")

@@ -872,6 +872,13 @@ options:
   tts:
     title: Chuyển văn bản thành giọng nói
     pageDescription: Đọc to đoạn văn bản bạn chọn bằng giọng tự nhiên.
+    engine:
+      title: Công cụ
+      selector:
+        title: Công cụ giọng nói
+        description: Edge TTS cho phép tùy chỉnh giọng và các thông số. Google Translate không cần khóa API, tự động nhận diện ngôn ngữ và cung cấp các tốc độ đặt sẵn.
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: Giọng nói
       selectPlaceholder: Chọn giọng nói
@@ -889,6 +896,11 @@ options:
       rate:
         title: Tốc độ
         description: Giọng đọc nhanh hay chậm hơn nhịp vốn có của nó bao nhiêu, từ -100 đến 100 phần trăm.
+      googleTranslateRate:
+        description: Google Translate cung cấp ba tốc độ đọc đặt sẵn.
+        normal: Bình thường
+        slow: Chậm
+        slower: Chậm hơn
       pitch:
         title: Cao độ
         description: Giọng nói cao hay thấp hơn cao độ vốn có của nó bao nhiêu, từ -100 đến 100 Hz.

@@ -5,6 +5,7 @@ import type {
   SelectionToolbarCustomActionOutputField,
 } from "@/types/config/selection-toolbar"
 import { selectionToolbarCustomActionNotebaseAccountSchema } from "@/types/config/selection-toolbar"
+import { sanitizeCustomActionGoogleSheetsConnection } from "@/utils/google-sheets/connection"
 
 export type NotebaseConnectionOwnershipKind = "owned" | "notebase_unavailable" | "foreign_account"
 
@@ -135,6 +136,10 @@ export function sanitizeSelectionToolbarCustomAction(
     ...action,
     notebaseConnection: sanitizeCustomActionNotebaseConnection(
       action.notebaseConnection,
+      action.outputSchema,
+    ),
+    googleSheetsConnection: sanitizeCustomActionGoogleSheetsConnection(
+      action.googleSheetsConnection,
       action.outputSchema,
     ),
   }

@@ -988,6 +988,13 @@ options:
   tts:
     title: Texto a voz
     pageDescription: Lee en voz alta cualquier selección con una voz natural.
+    engine:
+      title: Motor
+      selector:
+        title: Motor de voz
+        description: Edge TTS ofrece voces y controles configurables. Google Translate no necesita clave de API, detecta el idioma automáticamente y ofrece velocidades predefinidas.
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: Voz
       selectPlaceholder: Selecciona una voz
@@ -1005,6 +1012,11 @@ options:
       rate:
         title: Velocidad
         description: Cuánto más rápido o más lento lee la voz respecto a su propio ritmo, de -100 a 100 por ciento.
+      googleTranslateRate:
+        description: Google Translate ofrece tres velocidades de lectura predefinidas.
+        normal: Normal
+        slow: Lenta
+        slower: Más lenta
       pitch:
         title: Tono
         description: Cuánto más agudo o más grave habla la voz respecto a su propio tono, de -100 a 100 hercios.

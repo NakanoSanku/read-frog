@@ -872,6 +872,13 @@ options:
   tts:
     title: 텍스트 음성 변환
     pageDescription: 선택한 텍스트를 자연스러운 음성으로 읽어 줍니다.
+    engine:
+      title: 엔진
+      selector:
+        title: 음성 엔진
+        description: Edge TTS는 음성과 세부 설정을 조정할 수 있습니다. Google Translate는 API 키 없이 언어를 자동 감지하고 미리 설정된 속도로 읽습니다.
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: 음성
       selectPlaceholder: 음성을 선택하세요
@@ -889,6 +896,11 @@ options:
       rate:
         title: 속도
         description: 음성 본래의 속도보다 얼마나 빠르거나 느리게 읽을지, -100에서 100 퍼센트.
+      googleTranslateRate:
+        description: Google Translate는 세 가지 읽기 속도를 제공합니다.
+        normal: 보통
+        slow: 느리게
+        slower: 더 느리게
       pitch:
         title: 피치
         description: 음성 본래의 피치보다 얼마나 높거나 낮게 말할지, -100에서 100 헤르츠.

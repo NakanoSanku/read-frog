@@ -30,7 +30,7 @@ import { createSelectionToolbarPrecheckError } from "../inline-error"
 import { useSelectionOpenRequestResolver } from "../use-selection-open-request"
 import { CustomActionContent } from "./custom-action-content"
 import { CustomActionToolButton } from "./custom-action-tool-button"
-import { SaveToNotebaseButton } from "./save-to-notebase-button"
+import { SaveToGoogleSheetsButton } from "./save-to-google-sheets-button"
 import { isSaveToNotebaseDialogOpenAtom } from "./save-to-notebase-dialog-atom"
 import { SaveToNotebaseDialogHost } from "./save-to-notebase-dialog-host"
 import {
@@ -422,7 +422,7 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
           >
             {activeAction && (
               <>
-                <SaveToNotebaseButton
+                <SaveToGoogleSheetsButton
                   action={activeAction}
                   isRunning={displayedIsRunning}
                   result={displayedResult}

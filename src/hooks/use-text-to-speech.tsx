@@ -10,10 +10,17 @@ import { useRef, useState } from "react"
 import { toastManager } from "@/components/ui/base-ui/toast"
 import { ANALYTICS_FEATURE, ANALYTICS_SURFACE } from "@/types/analytics"
 import { createFeatureUsageContext, trackFeatureUsed } from "@/utils/analytics"
-import { EDGE_TTS_FEATURE_PROVIDER } from "@/utils/analytics-provider"
+import {
+  EDGE_TTS_FEATURE_PROVIDER,
+  GOOGLE_TRANSLATE_TTS_FEATURE_PROVIDER,
+} from "@/utils/analytics-provider"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { detectLanguage } from "@/utils/content/language"
 import { getRandomUUID } from "@/utils/crypto-polyfill"
+import {
+  getGoogleTranslateTTSLanguage,
+  splitGoogleTranslateTTSText,
+} from "@/utils/google-translate-tts"
 import { i18n } from "@/utils/i18n"
 import { logger } from "@/utils/logger"
 import { sendMessage } from "@/utils/message"
@@ -29,6 +36,11 @@ interface PlayAudioParams {
 interface SynthesizedAudioChunk {
   audioBase64: string
   contentType: string
+}
+
+interface ResolvedTTSParameters {
+  voice: string
+  googleTranslateLanguage: string
 }
 
 const TTS_ERROR_TOAST_ID = "tts-synthesize-error"
@@ -56,18 +68,21 @@ export function selectTTSVoice(
   return ttsConfig.defaultVoice
 }
 
-async function resolveVoiceForText(
+async function resolveTTSParameters(
   text: string,
   ttsConfig: TTSConfig,
   enableLLM: boolean,
   forcedVoice?: string,
-): Promise<string> {
+): Promise<ResolvedTTSParameters> {
   if (forcedVoice) {
     logger.info("[TextToSpeech] Using forced voice for text", {
       text,
       forcedVoice,
     })
-    return forcedVoice
+    return {
+      voice: forcedVoice,
+      googleTranslateLanguage: getGoogleTranslateTTSLanguage(null, forcedVoice),
+    }
   }
 
   const detectedLanguage = await detectLanguage(text, {
@@ -80,12 +95,28 @@ async function resolveVoiceForText(
     enableLLM,
   })
 
-  return selectTTSVoice(ttsConfig, detectedLanguage)
+  const voice = selectTTSVoice(ttsConfig, detectedLanguage, forcedVoice)
+  return {
+    voice,
+    googleTranslateLanguage: getGoogleTranslateTTSLanguage(detectedLanguage, voice),
+  }
 }
 
 function getTTSFriendlyErrorDescription(error: Error): string | undefined {
   if (error.message.includes("Edge TTS returned empty audio data")) {
     return "The current voice may not support this language. Try switching to a matching voice."
+  }
+
+  if (error.message.includes("[UNSUPPORTED_LANGUAGE]")) {
+    return "Google Translate cannot read this language. Try Edge TTS instead."
+  }
+
+  if (error.message.includes("Google Translate TTS") && error.message.includes("[NETWORK_ERROR]")) {
+    return "Google Translate TTS is unavailable. Please check your network and retry."
+  }
+
+  if (error.message.includes("Google Translate TTS returned empty audio")) {
+    return "Google Translate returned no audio for this text. Try Edge TTS instead."
   }
 
   if (error.message.includes("[SYNTH_RATE_LIMITED]")) {
@@ -130,6 +161,31 @@ async function synthesizeEdgeTTSAudioChunk(
   }
 }
 
+async function synthesizeGoogleTranslateTTSAudioChunk(
+  chunk: string,
+  language: string,
+  ttsConfig: TTSConfig,
+): Promise<SynthesizedAudioChunk> {
+  const response = await sendMessage("googleTranslateTtsSynthesize", {
+    text: chunk,
+    language,
+    speed: ttsConfig.googleTranslateSpeed,
+  })
+
+  if (!response.ok) {
+    throw new Error(`[${response.error.code}] ${response.error.message}`)
+  }
+
+  if (!response.audioBase64) {
+    throw new Error("Google Translate TTS returned empty audio data")
+  }
+
+  return {
+    audioBase64: response.audioBase64,
+    contentType: response.contentType,
+  }
+}
+
 export function useTextToSpeech(surface: AnalyticsSurface = ANALYTICS_SURFACE.SELECTION_TOOLBAR) {
   const queryClient = useQueryClient()
   const languageDetection = useAtomValue(configFieldsAtomMap.languageDetection)
@@ -165,7 +221,7 @@ export function useTextToSpeech(surface: AnalyticsSurface = ANALYTICS_SURFACE.SE
       activeRequestIdRef.current = requestId
       let didStartPlayback = false
 
-      const selectedVoice = await resolveVoiceForText(
+      const { voice: selectedVoice, googleTranslateLanguage } = await resolveTTSParameters(
         text,
         ttsConfig,
         languageDetection.mode === "llm",
@@ -174,14 +230,19 @@ export function useTextToSpeech(surface: AnalyticsSurface = ANALYTICS_SURFACE.SE
       if (shouldStopRef.current || activeRequestIdRef.current !== requestId) {
         return
       }
-      const chunks = splitTextByUtf8Bytes(text)
+      const chunks =
+        ttsConfig.engine === "google-translate"
+          ? splitGoogleTranslateTTSText(text)
+          : splitTextByUtf8Bytes(text)
       setTotalChunks(chunks.length)
       await sendMessage("ttsPlaybackPrepare")
 
       const fetchChunkAudio = async (chunk: string) => {
         logger.info("[TextToSpeech] Fetching chunk audio", {
           text: chunk,
+          engine: ttsConfig.engine,
           voice: selectedVoice,
+          language: googleTranslateLanguage,
           rate: ttsConfig.rate,
           pitch: ttsConfig.pitch,
           volume: ttsConfig.volume,
@@ -191,13 +252,19 @@ export function useTextToSpeech(surface: AnalyticsSurface = ANALYTICS_SURFACE.SE
             "tts-audio",
             {
               text: chunk,
+              engine: ttsConfig.engine,
               voice: selectedVoice,
+              language: googleTranslateLanguage,
+              googleTranslateSpeed: ttsConfig.googleTranslateSpeed,
               rate: ttsConfig.rate,
               pitch: ttsConfig.pitch,
               volume: ttsConfig.volume,
             },
           ],
-          queryFn: () => synthesizeEdgeTTSAudioChunk(chunk, selectedVoice, ttsConfig),
+          queryFn: () =>
+            ttsConfig.engine === "google-translate"
+              ? synthesizeGoogleTranslateTTSAudioChunk(chunk, googleTranslateLanguage, ttsConfig)
+              : synthesizeEdgeTTSAudioChunk(chunk, selectedVoice, ttsConfig),
           staleTime: Number.POSITIVE_INFINITY,
           gcTime: 1000 * 60 * 10,
           meta: {
@@ -286,7 +353,9 @@ export function useTextToSpeech(surface: AnalyticsSurface = ANALYTICS_SURFACE.SE
       forcedVoice: options?.forcedVoice,
       analyticsContext: {
         ...createFeatureUsageContext(ANALYTICS_FEATURE.TEXT_TO_SPEECH, surface),
-        ...EDGE_TTS_FEATURE_PROVIDER,
+        ...(ttsConfig.engine === "google-translate"
+          ? GOOGLE_TRANSLATE_TTS_FEATURE_PROVIDER
+          : EDGE_TTS_FEATURE_PROVIDER),
       },
     })
   }

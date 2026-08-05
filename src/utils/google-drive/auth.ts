@@ -6,16 +6,18 @@ import { logger } from "../logger"
 
 const GOOGLE_CLIENT_ID = env.WXT_GOOGLE_CLIENT_ID ?? "YOUR_CLIENT_ID"
 const GOOGLE_REDIRECT_URI = browser.identity.getRedirectURL()
-const GOOGLE_SCOPES = [
+const GOOGLE_BASE_SCOPES = [
   "https://www.googleapis.com/auth/drive.appdata",
   "https://www.googleapis.com/auth/userinfo.email",
 ]
+export const GOOGLE_SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets"
 const TOKEN_EXPIRY_BUFFER_MS = 60000
 
 const googleAuthTokenSchema = z.object({
   access_token: z.string(),
   expires_at: z.number(),
   token_type: z.string().default("Bearer"),
+  scopes: z.array(z.string()).optional(),
 })
 
 const googleUserInfoSchema = z.object({
@@ -27,6 +29,17 @@ const googleUserInfoSchema = z.object({
 
 export type GoogleAuthToken = z.infer<typeof googleAuthTokenSchema>
 export type GoogleUserInfo = z.infer<typeof googleUserInfoSchema>
+
+function getRequestedScopes(requiredScopes: readonly string[]) {
+  return Array.from(new Set([...GOOGLE_BASE_SCOPES, ...requiredScopes]))
+}
+
+function hasRequiredScopes(token: GoogleAuthToken, requiredScopes: readonly string[]) {
+  return (
+    requiredScopes.length === 0 ||
+    (!!token.scopes && requiredScopes.every((scope) => token.scopes?.includes(scope)))
+  )
+}
 
 /**
  * Get token from storage with validation
@@ -56,14 +69,18 @@ async function getTokenFromStorage(): Promise<GoogleAuthToken | null> {
 /**
  * Authenticate with Google Drive using OAuth 2.0
  */
-export async function authenticateGoogleDriveAndSaveTokenToStorage(): Promise<string> {
+export async function authenticateGoogleDriveAndSaveTokenToStorage(
+  requiredScopes: readonly string[] = [],
+): Promise<string> {
   try {
+    const requestedScopes = getRequestedScopes(requiredScopes)
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
     authUrl.searchParams.set("client_id", GOOGLE_CLIENT_ID)
     authUrl.searchParams.set("response_type", "token")
     authUrl.searchParams.set("redirect_uri", GOOGLE_REDIRECT_URI)
-    authUrl.searchParams.set("scope", GOOGLE_SCOPES.join(" "))
+    authUrl.searchParams.set("scope", requestedScopes.join(" "))
     authUrl.searchParams.set("prompt", "select_account")
+    authUrl.searchParams.set("include_granted_scopes", "true")
 
     const responseUrl = await browser.identity.launchWebAuthFlow({
       url: authUrl.toString(),
@@ -78,6 +95,7 @@ export async function authenticateGoogleDriveAndSaveTokenToStorage(): Promise<st
     const params = new URLSearchParams(url.hash.slice(1))
     const accessToken = params.get("access_token")
     const expiresIn = params.get("expires_in")
+    const grantedScopes = params.get("scope")?.split(" ").filter(Boolean) ?? requestedScopes
 
     if (!accessToken) {
       throw new Error("No access token in OAuth response")
@@ -89,6 +107,7 @@ export async function authenticateGoogleDriveAndSaveTokenToStorage(): Promise<st
       access_token: accessToken,
       expires_at: expiresAt,
       token_type: "Bearer",
+      scopes: grantedScopes,
     }
 
     // Validate before storing
@@ -105,13 +124,17 @@ export async function authenticateGoogleDriveAndSaveTokenToStorage(): Promise<st
 /**
  * Get valid access token, re-authenticate if expired
  */
-export async function getValidAccessToken(): Promise<string> {
+export async function getValidAccessToken(requiredScopes: readonly string[] = []): Promise<string> {
   try {
     const tokenData = await getTokenFromStorage()
 
-    // Re-authenticate if token not found or expiring soon (within 1 minute)
-    if (!tokenData || Date.now() >= tokenData.expires_at - TOKEN_EXPIRY_BUFFER_MS) {
-      return await authenticateGoogleDriveAndSaveTokenToStorage()
+    // Re-authenticate if the token is missing, expiring soon, or lacks a feature scope.
+    if (
+      !tokenData ||
+      Date.now() >= tokenData.expires_at - TOKEN_EXPIRY_BUFFER_MS ||
+      !hasRequiredScopes(tokenData, requiredScopes)
+    ) {
+      return await authenticateGoogleDriveAndSaveTokenToStorage(requiredScopes)
     }
 
     // Trust local expiry check - validate only on API 401 errors
@@ -134,7 +157,7 @@ export async function clearAccessToken(): Promise<void> {
 /**
  * Check if user is authenticated with valid token
  */
-export async function getIsAuthenticated(): Promise<boolean> {
+export async function getIsAuthenticated(requiredScopes: readonly string[] = []): Promise<boolean> {
   try {
     const tokenData = await getTokenFromStorage()
 
@@ -142,7 +165,10 @@ export async function getIsAuthenticated(): Promise<boolean> {
       return false
     }
 
-    return Date.now() < tokenData.expires_at - TOKEN_EXPIRY_BUFFER_MS
+    return (
+      Date.now() < tokenData.expires_at - TOKEN_EXPIRY_BUFFER_MS &&
+      hasRequiredScopes(tokenData, requiredScopes)
+    )
   } catch (error) {
     logger.error("Failed to check authentication status", error)
     return false

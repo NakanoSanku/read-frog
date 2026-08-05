@@ -44,6 +44,18 @@ describe("selection toolbar built-in actions", () => {
       },
       mappings: [],
     }
+    const googleSheetsConnection = {
+      spreadsheetId: "spreadsheet-1",
+      spreadsheetNameSnapshot: "Words",
+      sheetId: 0,
+      sheetNameSnapshot: "Dictionary",
+      connectedAccount: {
+        id: "account-1",
+        email: "reader@example.com",
+        image: null,
+      },
+      mappings: [],
+    }
 
     const next = replaceSelectionToolbarAction(selectionToolbar, {
       ...dictionary,
@@ -52,12 +64,14 @@ describe("selection toolbar built-in actions", () => {
       enabled: false,
       providerId: "openai-default",
       notebaseConnection: connection,
+      googleSheetsConnection,
     })
 
     expect(next.builtInActions.dictionary).toEqual({
       enabled: false,
       providerId: "openai-default",
       notebaseConnection: connection,
+      googleSheetsConnection,
     })
     expect(getBuiltInDictionaryAction(next)).toMatchObject({
       id: "default-dictionary",
@@ -66,6 +80,7 @@ describe("selection toolbar built-in actions", () => {
       enabled: false,
       providerId: "openai-default",
       notebaseConnection: connection,
+      googleSheetsConnection,
     })
     expect(next.customActions).toEqual([])
   })

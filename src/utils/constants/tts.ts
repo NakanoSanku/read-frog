@@ -2,6 +2,8 @@ import type { TTSConfig } from "@/types/config/tts"
 import { createDefaultTTSLanguageVoices, EDGE_TTS_FALLBACK_VOICE } from "@/types/config/tts"
 
 export const DEFAULT_TTS_CONFIG: TTSConfig = {
+  engine: "edge-tts",
+  googleTranslateSpeed: "normal",
   defaultVoice: EDGE_TTS_FALLBACK_VOICE,
   languageVoices: createDefaultTTSLanguageVoices(),
   rate: 0,

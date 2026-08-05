@@ -11,11 +11,16 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write
+
 env:
   WXT_GOOGLE_CLIENT_ID: ${{ secrets.WXT_GOOGLE_CLIENT_ID || vars.WXT_GOOGLE_CLIENT_ID }}
   WXT_POSTHOG_API_KEY: ${{ secrets.WXT_POSTHOG_API_KEY || vars.WXT_POSTHOG_API_KEY }}
   WXT_POSTHOG_HOST: ${{ secrets.WXT_POSTHOG_HOST || vars.WXT_POSTHOG_HOST }}
   WXT_ANALYTICS_DAILY_FEATURE_CACHE_ENABLED: "true"
+  DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -49,6 +54,14 @@ jobs:
       - name: Install Dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Validate Google OAuth configuration
+        shell: bash
+        run: |
+          if [[ -z "${WXT_GOOGLE_CLIENT_ID:-}" ]]; then
+            echo "::error::Set the WXT_GOOGLE_CLIENT_ID repository variable before releasing."
+            exit 1
+          fi
+
       - name: Create Release Pull Request or Tag
         if: github.event_name != 'workflow_dispatch'
         id: changesets
@@ -63,7 +76,7 @@ jobs:
           SKIP_FREE_API: true
 
       - name: Send Discord Notification
-        if: steps.changesets.outputs.published == 'true'
+        if: steps.changesets.outputs.published == 'true' && env.DISCORD_WEBHOOK_URL != ''
         run: |
           VERSION=$(echo '${{ steps.changesets.outputs.publishedPackages }}' | jq -r '.[0].version')
           TAG="v$VERSION"
@@ -116,7 +129,7 @@ jobs:
             }')
 
           # Send to Discord
-          RESPONSE=$(curl -s -w "%{http_code}" -H "Content-Type: application/json" -X POST -d "$DISCORD_PAYLOAD" ${{ secrets.DISCORD_WEBHOOK_URL }})
+          RESPONSE=$(curl -s -w "%{http_code}" -H "Content-Type: application/json" -X POST -d "$DISCORD_PAYLOAD" "$DISCORD_WEBHOOK_URL")
           HTTP_CODE=$(echo "$RESPONSE" | tail -c 4)
           if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
             echo "✅ Discord notification sent"

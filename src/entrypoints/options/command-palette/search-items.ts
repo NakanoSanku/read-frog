@@ -340,7 +340,7 @@ export const SEARCH_ITEMS: SearchItem[] = [
     sectionId: "selection-toolbar-save-suggestion",
     route: "/selection-toolbar",
     titleKey: "options.selectionToolbar.actions.saveSuggestion.title",
-    descriptionKey: "options.selectionToolbar.actions.saveSuggestion.description",
+    descriptionKey: "options.selectionToolbar.actions.saveSuggestion.googleSheetsDescription",
     pageKey: "options.selectionToolbar.title",
   },
   {
@@ -466,6 +466,13 @@ export const SEARCH_ITEMS: SearchItem[] = [
   },
 
   // Text to Speech page
+  {
+    sectionId: "tts-engine",
+    route: "/tts",
+    titleKey: "options.tts.engine.selector.title",
+    descriptionKey: "options.tts.engine.selector.description",
+    pageKey: "options.tts.title",
+  },
   {
     sectionId: "language-voice",
     route: "/tts",

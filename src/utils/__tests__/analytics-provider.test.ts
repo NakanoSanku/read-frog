@@ -5,6 +5,7 @@ import {
   classifyProviderConfig,
   classifyResolvedProvider,
   EDGE_TTS_FEATURE_PROVIDER,
+  GOOGLE_TRANSLATE_TTS_FEATURE_PROVIDER,
   normalizeFeatureProviderAnalytics,
   UNKNOWN_FEATURE_PROVIDER,
 } from "@/utils/analytics-provider"
@@ -63,6 +64,16 @@ describe("feature provider analytics", () => {
       provider: "edge-tts",
       backend_kind: "non_llm",
     })
+  })
+
+  it("classifies Google Translate TTS as a non-LLM backend", () => {
+    expect(GOOGLE_TRANSLATE_TTS_FEATURE_PROVIDER).toEqual({
+      provider: "google-translate",
+      backend_kind: "non_llm",
+    })
+    expect(normalizeFeatureProviderAnalytics("google-translate", "non_llm")).toEqual(
+      GOOGLE_TRANSLATE_TTS_FEATURE_PROVIDER,
+    )
   })
 
   it("uses unknown/unknown for missing providers and invalid runtime combinations", () => {

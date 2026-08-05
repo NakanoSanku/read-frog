@@ -39,7 +39,9 @@ export function SaveSuggestionItems() {
       <ConfigItem
         id="selection-toolbar-save-suggestion"
         title={i18n.t("options.selectionToolbar.actions.saveSuggestion.title")}
-        description={i18n.t("options.selectionToolbar.actions.saveSuggestion.description")}
+        description={i18n.t(
+          "options.selectionToolbar.actions.saveSuggestion.googleSheetsDescription",
+        )}
       >
         <Switch
           checked={selectionToolbar.saveSuggestion.enabled}

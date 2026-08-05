@@ -18,9 +18,9 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock(
-  "@/entrypoints/selection.content/selection-toolbar/custom-action-button/use-save-to-notebase",
+  "@/entrypoints/selection.content/selection-toolbar/custom-action-button/use-save-to-google-sheets",
   () => ({
-    useSaveToNotebase: () => ({ save: mocks.save, isSaving: false }),
+    useSaveToGoogleSheets: () => ({ save: mocks.save, isSaving: false }),
   }),
 )
 

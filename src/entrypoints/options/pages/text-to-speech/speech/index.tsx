@@ -1,6 +1,16 @@
+import type { TTSConfig } from "@/types/config/tts"
+import type { GoogleTranslateTTSSpeed } from "@/types/google-translate-tts"
 import { useAtom } from "jotai"
 import { useState } from "react"
 import { Input } from "@/components/ui/base-ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/base-ui/select"
 import { toastManager } from "@/components/ui/base-ui/toast"
 import {
   MAX_TTS_PITCH,
@@ -18,12 +28,41 @@ import { i18n } from "@/utils/i18n"
 import { ConfigItem } from "../../../components/config-item"
 import { ConfigSection } from "../../../components/config-section"
 
-/** How the chosen voice delivers a line — three dials, each an offset from how it speaks alone. */
+/** How the selected engine delivers a line, limited to controls that engine actually supports. */
 export function SpeechSection() {
   const [ttsConfig, setTtsConfig] = useAtom(configFieldsAtomMap.tts)
 
   return (
     <ConfigSection id="speech" title={i18n.t("options.tts.speech.title")}>
+      {ttsConfig.engine === "google-translate" ? (
+        <ConfigItem
+          id="tts-rate"
+          title={i18n.t("options.tts.speech.rate.title")}
+          description={i18n.t("options.tts.speech.googleTranslateRate.description")}
+        >
+          <GoogleTranslateSpeedSelect
+            value={ttsConfig.googleTranslateSpeed}
+            onValueChange={(googleTranslateSpeed) => {
+              void setTtsConfig({ googleTranslateSpeed })
+            }}
+          />
+        </ConfigItem>
+      ) : (
+        <EdgeSpeechItems ttsConfig={ttsConfig} setTtsConfig={setTtsConfig} />
+      )}
+    </ConfigSection>
+  )
+}
+
+function EdgeSpeechItems({
+  ttsConfig,
+  setTtsConfig,
+}: {
+  ttsConfig: TTSConfig
+  setTtsConfig: (patch: Partial<TTSConfig>) => Promise<void>
+}) {
+  return (
+    <>
       <ConfigItem
         id="tts-rate"
         title={i18n.t("options.tts.speech.rate.title")}
@@ -69,7 +108,46 @@ export function SpeechSection() {
           }}
         />
       </ConfigItem>
-    </ConfigSection>
+    </>
+  )
+}
+
+function getGoogleTranslateSpeedLabel(speed: GoogleTranslateTTSSpeed): string {
+  switch (speed) {
+    case "slow":
+      return i18n.t("options.tts.speech.googleTranslateRate.slow")
+    case "slower":
+      return i18n.t("options.tts.speech.googleTranslateRate.slower")
+    default:
+      return i18n.t("options.tts.speech.googleTranslateRate.normal")
+  }
+}
+
+function GoogleTranslateSpeedSelect({
+  value,
+  onValueChange,
+}: {
+  value: GoogleTranslateTTSSpeed
+  onValueChange: (value: GoogleTranslateTTSSpeed) => void
+}) {
+  return (
+    <Select
+      value={value}
+      onValueChange={(speed) => onValueChange(speed as GoogleTranslateTTSSpeed)}
+    >
+      <SelectTrigger size="sm">
+        <SelectValue render={<span />}>{getGoogleTranslateSpeedLabel(value)}</SelectValue>
+      </SelectTrigger>
+      <SelectContent align="end">
+        <SelectGroup>
+          {(["normal", "slow", "slower"] as const).map((speed) => (
+            <SelectItem key={speed} value={speed}>
+              {getGoogleTranslateSpeedLabel(speed)}
+            </SelectItem>
+          ))}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   )
 }
 

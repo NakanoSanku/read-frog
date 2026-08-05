@@ -523,6 +523,7 @@ options:
       saveSuggestion:
         title: 保存建议
         description: 使用 AI 提供商进行划词翻译后，推荐可存入笔记库的词条
+        googleSheetsDescription: 使用 AI 提供商进行划词翻译后，推荐可保存到 Google Sheets 的词条
         action: 指令
         actionDescription: 用于生成保存建议的指令
     display:
@@ -597,6 +598,46 @@ options:
           description: 此输出字段将被移除。
           confirm: 删除
           cancel: 取消
+        googleSheets:
+          title: Google Sheets 连接
+          description: 将这个指令的结构化结果作为新行追加到 Google Sheets。
+          authRequiredTitle: 连接 Google 后配置笔记同步
+          authRequiredDescription: 请先授权 Google Sheets，再连接表格或编辑字段映射。
+          authAction: 连接 Google
+          spreadsheetLabel: 电子表格
+          spreadsheetPlaceholder: 粘贴 Google Sheets 链接或表格 ID
+          invalidReferenceError: 请输入有效的 Google Sheets 链接或表格 ID。
+          noGridSheetsError: 此电子表格中没有可写入的普通工作表。
+          connectAction: 连接
+          connectingAction: 连接中...
+          disconnectAction: 断开连接
+          accountMismatchTitle: 此连接属于另一个 Google 账号
+          accountMismatchDescription: 请断开连接，或重新登录创建此映射的账号。
+          connectionErrorTitle: 无法连接 Google Sheets
+          openAction: 打开表格
+          refreshAction: 刷新
+          schemaLoading: 正在加载表头...
+          schemaErrorTitle: 加载表头失败
+          schemaErrorDescription: 请检查访问权限并重试。
+          sheetLabel: 工作表
+          emptyHeadersTitle: 第一行没有表头
+          emptyHeadersDescription: 请在此工作表第一行添加列名，然后刷新连接。
+          mappingsLabel: 字段映射
+          mappingsEmpty: 还没有映射；第一行包含表头后即可添加。
+          addMappingAction: 添加映射
+          removeMappingAction: 删除映射
+          localFieldLabel: 指令字段
+          localFieldPlaceholder: 选择一个指令字段
+          remoteFieldLabel: 表格列
+          remoteFieldPlaceholder: 选择一个表格列
+          columnUnavailableOption: 已删除
+          columnOutdatedOption: 原表头
+          invalidMappingsTitle: 有些映射需要处理
+          invalidMappingsDescription: 保存笔记前，请刷新或修复无效映射。
+          mappingMissingLocal: 映射的指令字段已经不存在。
+          mappingMissingRemote: 映射的表格列已经不存在。
+          mappingRenamedRemote: 表头已更名，请重新选择目标列进行确认。
+          mappingMissingSchema: 刷新表头后才能校验这个映射。
         notebase:
           title: 笔记库连接
           description: 将这个指令的结构化结果保存到远程笔记库。
@@ -988,6 +1029,13 @@ options:
   tts:
     title: 文本转语音
     pageDescription: 用自然的语音朗读任何选中的文本。
+    engine:
+      title: 引擎
+      selector:
+        title: 语音引擎
+        description: Edge TTS 支持自定义语音和参数；Google Translate 无需 API Key，可自动检测语言并提供预设语速。
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: 语音
       selectPlaceholder: 请选择一个声音
@@ -1005,6 +1053,11 @@ options:
       rate:
         title: 语速
         description: 相对语音本身的语速快多少或慢多少，取值 -100 到 100 个百分点。
+      googleTranslateRate:
+        description: Google Translate 提供三档预设朗读速度。
+        normal: 正常
+        slow: 慢速
+        slower: 更慢
       pitch:
         title: 音高
         description: 相对语音本身的音高高多少或低多少，取值 -100 到 100 赫兹。
@@ -1151,6 +1204,18 @@ action:
   regenerate: 重新生成
   viewContextDetails: 上下文
   customizeCustomAction: 定制“$1”动作
+  saveToGoogleSheets: 保存到 Google Sheets
+  saveToGoogleSheetsSaving: 保存中...
+  saveToGoogleSheetsSuccess: 已保存到 Google Sheets
+  saveToGoogleSheetsFailed: 保存到 Google Sheets 失败
+  saveToGoogleSheetsNotConfigured: 保存前请先连接 Google Sheets
+  saveToGoogleSheetsConnectionInvalid: Google Sheets 字段映射已经过期
+  saveToGoogleSheetsAccountMismatch: 请重新连接此表格使用的 Google 账号
+  saveToGoogleSheetsUnavailable: 已连接的电子表格或工作表不可用
+  saveToGoogleSheetsAccessDenied: 当前 Google 账号无法编辑此表格
+  saveToGoogleSheetsAuthenticationFailed: 请重新连接 Google Sheets 后继续
+  configureGoogleSheets: 去配置
+  openGoogleSheets: 打开表格
   saveToNotebase: 保存到笔记库
   saveToNotebaseSaving: 保存中...
   saveToNotebaseSuccess: 已保存到笔记库
@@ -1188,6 +1253,7 @@ action:
 saveSuggestion:
   title: 猜你想存
   description: 把下列词存入笔记库，将来随时复习
+  googleSheetsDescription: 把下列词保存到 Google Sheets，将来随时复习
   save: 保存
   saved: 已保存
   staleSuggestion: 该建议已过期

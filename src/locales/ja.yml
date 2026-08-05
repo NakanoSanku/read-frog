@@ -872,6 +872,13 @@ options:
   tts:
     title: テキスト読み上げ
     pageDescription: 選択したテキストを自然な音声で読み上げます。
+    engine:
+      title: エンジン
+      selector:
+        title: 読み上げエンジン
+        description: Edge TTS ではボイスと各種設定を変更できます。Google Translate は API キー不要で言語を自動検出し、プリセット速度で読み上げます。
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: ボイス
       selectPlaceholder: ボイスを選択
@@ -889,6 +896,11 @@ options:
       rate:
         title: 速度
         description: ボイス本来の速さからどれだけ速く、または遅く読むか。-100 から 100 パーセント。
+      googleTranslateRate:
+        description: Google Translate では 3 段階の読み上げ速度を選べます。
+        normal: 標準
+        slow: 遅い
+        slower: より遅い
       pitch:
         title: ピッチ
         description: ボイス本来のピッチからどれだけ高く、または低く話すか。-100 から 100 ヘルツ。

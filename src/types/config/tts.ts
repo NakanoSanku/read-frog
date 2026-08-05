@@ -1,8 +1,17 @@
 import type { LangCodeISO6393 } from "@read-frog/definitions"
 import { LANG_CODE_ISO6393_OPTIONS, langCodeISO6393Schema } from "@read-frog/definitions"
 import { z } from "zod"
+import { GOOGLE_TRANSLATE_TTS_SPEED_VALUES } from "../google-translate-tts"
 
 export type TTSVoice = string
+
+export const TTS_ENGINE_VALUES = ["edge-tts", "google-translate"] as const
+export const ttsEngineSchema = z.enum(TTS_ENGINE_VALUES).default("edge-tts")
+export type TTSEngine = z.infer<typeof ttsEngineSchema>
+
+export const googleTranslateTTSSpeedSchema = z
+  .enum(GOOGLE_TRANSLATE_TTS_SPEED_VALUES)
+  .default("normal")
 
 const EDGE_TTS_VOICE_BY_ISO6393: Partial<Record<LangCodeISO6393, TTSVoice>> = {
   eng: "en-US-AndrewMultilingualNeural",
@@ -3241,6 +3250,9 @@ export const ttsPitchSchema = z.coerce.number().int().min(MIN_TTS_PITCH).max(MAX
 export const ttsVolumeSchema = z.coerce.number().int().min(MIN_TTS_VOLUME).max(MAX_TTS_VOLUME)
 
 export const ttsConfigSchema = z.object({
+  // Keeps configs saved before engine selection existed valid without a schema migration.
+  engine: ttsEngineSchema,
+  googleTranslateSpeed: googleTranslateTTSSpeedSchema,
   defaultVoice: ttsVoiceSchema,
   languageVoices: z.record(langCodeISO6393Schema, ttsVoiceSchema),
   rate: ttsRateSchema,

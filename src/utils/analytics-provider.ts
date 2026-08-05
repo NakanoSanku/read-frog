@@ -27,6 +27,11 @@ export const EDGE_TTS_FEATURE_PROVIDER: FeatureProviderAnalytics = {
   backend_kind: "non_llm",
 }
 
+export const GOOGLE_TRANSLATE_TTS_FEATURE_PROVIDER: FeatureProviderAnalytics = {
+  provider: "google-translate",
+  backend_kind: "non_llm",
+}
+
 export function classifyProviderConfig(
   providerConfig: ProviderConfig | null | undefined,
 ): FeatureProviderAnalytics {

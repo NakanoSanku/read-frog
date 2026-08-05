@@ -12,7 +12,7 @@ import { findSelectionToolbarAction } from "@/utils/custom-actions"
 import { i18n } from "@/utils/i18n"
 import { getOutputSchemaFingerprint } from "@/utils/notebase/pending-save"
 import { trackSaveSuggestionEvent } from "@/utils/save-suggestion/analytics"
-import { useSaveToNotebase } from "../custom-action-button/use-save-to-notebase"
+import { useSaveToGoogleSheets } from "../custom-action-button/use-save-to-google-sheets"
 
 function formatNoteValue(value: string | number | null): string | null {
   if (value === null) {
@@ -55,7 +55,7 @@ export function SaveSuggestionCard({
   markShownOnce: (sessionKey: string) => boolean
 }) {
   const [selectionToolbar, setSelectionToolbar] = useAtom(configFieldsAtomMap.selectionToolbar)
-  const { save, isSaving } = useSaveToNotebase()
+  const { save, isSaving } = useSaveToGoogleSheets()
   const [saveState, setSaveState] = useState<"idle" | "saved" | "stale">("idle")
 
   const { sessionKey, validated, actionSnapshot, firedAt, analyticsProvider } = suggestion
@@ -121,7 +121,7 @@ export function SaveSuggestionCard({
 
   const isButtonDisabled = isSaving || saveState !== "idle"
   const buttonLabel = isSaving
-    ? i18n.t("action.saveToNotebaseSaving")
+    ? i18n.t("action.saveToGoogleSheetsSaving")
     : saveState === "saved"
       ? i18n.t("saveSuggestion.saved")
       : i18n.t("saveSuggestion.save")
@@ -155,7 +155,9 @@ export function SaveSuggestionCard({
           </Label>
         </div>
       </div>
-      <p className="text-xs text-muted-foreground">{i18n.t("saveSuggestion.description")}</p>
+      <p className="text-xs text-muted-foreground">
+        {i18n.t("saveSuggestion.googleSheetsDescription")}
+      </p>
       <div className="space-y-1.5">
         {validated.notes.map((note, index) => (
           <NoteRow

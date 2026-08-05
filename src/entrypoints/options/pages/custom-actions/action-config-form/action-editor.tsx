@@ -30,9 +30,9 @@ import { i18n } from "@/utils/i18n"
 import { sanitizeSelectionToolbarCustomAction } from "@/utils/notebase/connection"
 import { selectedCustomActionIdAtom } from "../atoms"
 import { formOpts, useAppForm } from "./form"
+import { GoogleSheetsConnectionField as GoogleSheetsConnectionFormField } from "./google-sheets-connection-field"
 import { IconField as IconFormField } from "./icon-field"
 import { NameField as NameFormField } from "./name-field"
-import { NotebaseConnectionField as NotebaseConnectionFormField } from "./notebase-connection-field"
 import {
   OutputSchemaField as EditableOutputSchemaFormField,
   ReadOnlyOutputSchemaField,
@@ -250,9 +250,9 @@ function ReadOnlyOutputSchema() {
   return <ReadOnlyOutputSchemaField outputSchema={action.outputSchema} />
 }
 
-function NotebaseConnectionField() {
+function GoogleSheetsConnectionField() {
   const { form } = useActionEditor().state
-  return <NotebaseConnectionFormField form={form} />
+  return <GoogleSheetsConnectionFormField form={form} />
 }
 
 function DuplicateButton() {
@@ -325,7 +325,7 @@ export const ActionEditor = {
     Editable: EditableOutputSchema,
     ReadOnly: ReadOnlyOutputSchema,
   },
-  NotebaseConnectionField,
+  GoogleSheetsConnectionField,
   CustomizeButton,
   DuplicateButton,
   DeleteButton,

@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest"
 import { selectTTSVoice } from "../use-text-to-speech"
 
 const baseTtsConfig = {
+  engine: "edge-tts",
+  googleTranslateSpeed: "normal",
   defaultVoice: "en-US-DavisNeural",
   languageVoices: {
     eng: "en-US-DavisNeural",

@@ -872,6 +872,13 @@ options:
   tts:
     title: Синтез речи
     pageDescription: Озвучивайте выделенный текст естественным голосом.
+    engine:
+      title: Движок
+      selector:
+        title: Движок синтеза речи
+        description: Edge TTS позволяет настраивать голоса и параметры. Google Translate не требует ключа API, автоматически определяет язык и предлагает готовые скорости.
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: Голос
       selectPlaceholder: Выберите голос
@@ -889,6 +896,11 @@ options:
       rate:
         title: Скорость
         description: Насколько быстрее или медленнее собственного темпа читает голос, от -100 до 100 процентов.
+      googleTranslateRate:
+        description: Google Translate предлагает три готовые скорости чтения.
+        normal: Обычная
+        slow: Медленная
+        slower: Ещё медленнее
       pitch:
         title: Высота
         description: Насколько выше или ниже собственной высоты звучит голос, от -100 до 100 герц.

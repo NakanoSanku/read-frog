@@ -872,6 +872,13 @@ options:
   tts:
     title: Metinden Konuşmaya
     pageDescription: Seçtiğiniz metni doğal bir sesle okutun.
+    engine:
+      title: Motor
+      selector:
+        title: Konuşma motoru
+        description: Edge TTS yapılandırılabilir sesler ve denetimler sunar. Google Translate API anahtarı gerektirmez, dili otomatik algılar ve hazır hızlar sunar.
+      edgeTts: Edge TTS
+      googleTranslate: Google Translate
     voice:
       title: Ses
       selectPlaceholder: Bir ses seçin
@@ -889,6 +896,11 @@ options:
       rate:
         title: Hız
         description: Sesin kendi hızına göre ne kadar hızlı ya da yavaş okuduğu, -100 ile 100 yüzde arasında.
+      googleTranslateRate:
+        description: Google Translate üç hazır okuma hızı sunar.
+        normal: Normal
+        slow: Yavaş
+        slower: Daha yavaş
       pitch:
         title: Perde
         description: Sesin kendi perdesine göre ne kadar tiz ya da pes konuştuğu, -100 ile 100 hertz arasında.
