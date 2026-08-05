@@ -1,5 +1,21 @@
 # @read-frog/extension
 
+## 1.46.0
+
+### Minor Changes
+
+- [`aa26513`](https://github.com/NakanoSanku/read-frog/commit/aa2651314aad66afcd47cd8d45a735c37aae0b7e) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - feat(notes): sync custom action notes to Google Sheets
+
+- [`aa26513`](https://github.com/NakanoSanku/read-frog/commit/aa2651314aad66afcd47cd8d45a735c37aae0b7e) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - feat(tts): add Google Translate speech engine
+
+### Patch Changes
+
+- [#2037](https://github.com/mengxi-ream/read-frog/pull/2037) [`951e20f`](https://github.com/mengxi-ream/read-frog/commit/951e20fa82cd96d606a44156362f402c79d11473) Thanks [@ananaBMaster](https://github.com/ananaBMaster)! - fix(translate): translate Ubiquiti Community release posts and comments
+
+- [#2036](https://github.com/mengxi-ream/read-frog/pull/2036) [`dc1c3fc`](https://github.com/mengxi-ream/read-frog/commit/dc1c3fca95d03e18df2d8484c2aebe875ac7481a) Thanks [@ananaBMaster](https://github.com/ananaBMaster)! - feat(translation): add precision rewrite as an optional built-in prompt
+
+- [#2032](https://github.com/mengxi-ream/read-frog/pull/2032) [`3559ee0`](https://github.com/mengxi-ream/read-frog/commit/3559ee0b992243ea325db4ea93ae290db71aa46e) Thanks [@frogGuaGuaGuaGua](https://github.com/frogGuaGuaGuaGua)! - fix(config): disable AI smart context by default
+
 ## 1.45.1
 
 ### Patch Changes
