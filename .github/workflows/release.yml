@@ -139,7 +139,10 @@ jobs:
 
       - name: Build and Zip Extension
         if: steps.changesets.outputs.published == 'true' || github.event_name == 'workflow_dispatch'
-        run: pnpm zip:all
+        run: |
+          if [[ -z "${WXT_POSTHOG_API_KEY:-}" ]]; then unset WXT_POSTHOG_API_KEY; fi
+          if [[ -z "${WXT_POSTHOG_HOST:-}" ]]; then unset WXT_POSTHOG_HOST; fi
+          pnpm zip:all
 
       - name: Upload Extension Zip to Release
         if: steps.changesets.outputs.published == 'true' || github.event_name == 'workflow_dispatch'
