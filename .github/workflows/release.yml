@@ -29,7 +29,7 @@ jobs:
     name: Release Extension
     runs-on: ubuntu-latest
     env:
-      SKIP_ENV_VALIDATION: true
+      WXT_SKIP_ENV_VALIDATION: "true"
       HUSKY: 0
     steps:
       - name: Checkout Repo
