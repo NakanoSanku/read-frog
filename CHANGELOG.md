@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.48.3
+
+### Patch Changes
+
+- [`bd47887`](https://github.com/NakanoSanku/read-frog/commit/bd47887248751a756ab4725b872faad8fa196661) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - revert(vocabulary): restore the v1.47.1 feature set
+
 ## 1.48.2
 
 ### Patch Changes
