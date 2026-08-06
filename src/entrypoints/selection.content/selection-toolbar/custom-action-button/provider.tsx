@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import type { SelectionSession } from "../atoms"
 import type { SelectionPopoverActions } from "@/components/ui/selection-popover"
+import type { Config } from "@/types/config/config"
 import type { WordHighlightLookupDetail } from "@/types/vocabulary"
 import { useAtomValue, useSetAtom } from "jotai"
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -74,6 +75,22 @@ export function useSelectionCustomActionPopover() {
   return useSelectionCustomActionContext()
 }
 
+export function resolveWordHighlightLookupActionId(
+  selectionToolbar: Config["selectionToolbar"],
+): string | null {
+  const configuredAction = findSelectionToolbarAction(
+    selectionToolbar,
+    selectionToolbar.saveSuggestion.actionId,
+  )
+  if (configuredAction && configuredAction.enabled !== false) return configuredAction.id
+
+  const builtInDictionary = findSelectionToolbarAction(
+    selectionToolbar,
+    BUILT_IN_DICTIONARY_ACTION_ID,
+  )
+  return builtInDictionary && builtInDictionary.enabled !== false ? builtInDictionary.id : null
+}
+
 export function SelectionCustomActionProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false)
   const [anchor, setAnchor] = useState<{ x: number; y: number } | null>(null)
@@ -105,6 +122,10 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   const { resolveContextMenuOpenRequest } = useSelectionOpenRequestResolver(selectionSession)
   const selectionText = activeSession?.selectionSnapshot.text ?? null
   const cleanSelection = useMemo(() => normalizeSelectedText(selectionText), [selectionText])
+  const wordHighlightLookupActionId = resolveWordHighlightLookupActionId(selectionToolbarConfig)
+  const isActiveVocabularyAction =
+    activeActionId === BUILT_IN_DICTIONARY_ACTION_ID ||
+    activeActionId === selectionToolbarConfig.saveSuggestion.actionId
   const paragraphsText = useMemo(() => {
     if (!cleanSelection) {
       return ""
@@ -226,11 +247,11 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   useEffect(() => {
     const handleWordHighlightLookup = (event: Event) => {
       const detail = (event as CustomEvent<WordHighlightLookupDetail>).detail
-      if (!detail?.term || !detail.anchor) return
+      if (!detail?.term || !detail.anchor || !wordHighlightLookupActionId) return
 
       const contextText = detail.context || detail.term
       openActionRequest({
-        actionId: BUILT_IN_DICTIONARY_ACTION_ID,
+        actionId: wordHighlightLookupActionId,
         anchor: detail.anchor,
         surface: ANALYTICS_SURFACE.SELECTION_TOOLBAR,
         session: {
@@ -244,7 +265,7 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
 
     window.addEventListener(WORD_HIGHLIGHT_LOOKUP_EVENT, handleWordHighlightLookup)
     return () => window.removeEventListener(WORD_HIGHLIGHT_LOOKUP_EVENT, handleWordHighlightLookup)
-  }, [openActionRequest])
+  }, [openActionRequest, wordHighlightLookupActionId])
 
   const openToolbarCustomAction = useCallback(
     (actionId: string, triggerElement: HTMLElement | null) => {
@@ -360,7 +381,7 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   useEffect(() => {
     if (
       !isOpen ||
-      activeActionId !== BUILT_IN_DICTIONARY_ACTION_ID ||
+      !isActiveVocabularyAction ||
       !cleanSelection ||
       !selectionToolbarConfig.wordHighlight.enabled ||
       !selectionToolbarConfig.wordHighlight.autoSpeak
@@ -373,10 +394,10 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
     autoSpokenSessionRef.current = sessionKey
     void playTextToSpeech(cleanSelection, ttsConfig)
   }, [
-    activeActionId,
     activeSession?.id,
     cleanSelection,
     isOpen,
+    isActiveVocabularyAction,
     playTextToSpeech,
     popoverSessionKey,
     selectionToolbarConfig.wordHighlight.autoSpeak,
@@ -387,7 +408,7 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   useEffect(() => {
     if (
       !isOpen ||
-      activeActionId !== BUILT_IN_DICTIONARY_ACTION_ID ||
+      !isActiveVocabularyAction ||
       !cleanSelection ||
       displayedIsRunning ||
       displayedError ||
@@ -414,13 +435,13 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
       })
     })
   }, [
-    activeActionId,
     activeSession?.id,
     cleanSelection,
     displayedError,
     displayedIsRunning,
     displayedResult,
     isOpen,
+    isActiveVocabularyAction,
     paragraphsText,
     popoverSessionKey,
     selectionToolbarConfig.wordHighlight.autoSave,
@@ -527,7 +548,7 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
           >
             {activeAction && (
               <>
-                {activeAction.id === BUILT_IN_DICTIONARY_ACTION_ID && cleanSelection && (
+                {isActiveVocabularyAction && cleanSelection && (
                   <SaveVocabularyButton
                     term={cleanSelection}
                     context={paragraphsText}

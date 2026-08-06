@@ -9,10 +9,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { createStore, Provider } from "jotai"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { storage } from "#imports"
 import { TooltipProvider } from "@/components/ui/base-ui/tooltip"
 import { isLLMProviderConfig } from "@/types/config/provider"
 import { configAtom } from "@/utils/atoms/config"
-import { DEFAULT_CONFIG } from "@/utils/constants/config"
+import { CONFIG_STORAGE_KEY, DEFAULT_CONFIG } from "@/utils/constants/config"
+import { WORD_HIGHLIGHT_LOOKUP_EVENT } from "@/utils/constants/vocabulary"
 import { getBuiltInDictionaryAction } from "@/utils/custom-actions"
 import { buildContextSnapshot, createRangeSnapshot, normalizeSelectedText } from "../../utils"
 import { setSelectionStateAtom } from "../atoms"
@@ -595,11 +597,12 @@ describe("selection toolbar requests", () => {
     getOrGenerateWebPageSummaryMock.mockResolvedValue(undefined)
   })
 
-  afterEach(() => {
+  afterEach(async () => {
     cleanup()
     document.body.innerHTML = ""
     window.getSelection = originalGetSelection
     vi.resetAllMocks()
+    await storage.removeItem(`local:${CONFIG_STORAGE_KEY}`)
   })
 
   it("does not rerun translation on passive config refresh, but reruns when request values change", async () => {
@@ -1754,6 +1757,45 @@ describe("selection toolbar requests", () => {
         action_name: action.name,
       }),
     )
+  })
+
+  it("opens the configured custom dictionary when a highlighted word is clicked", async () => {
+    streamBackgroundStructuredObjectMock.mockResolvedValue(
+      createStructuredObjectSnapshot({ Term: "serendipity" }),
+    )
+    const config = cloneConfig(DEFAULT_CONFIG)
+    const customDictionary = {
+      ...getBuiltInDictionaryAction(config.selectionToolbar),
+      id: "custom-dictionary-action",
+      name: "My Dictionary",
+    }
+    config.selectionToolbar.builtInActions.dictionary.enabled = false
+    config.selectionToolbar.customActions = [customDictionary]
+    config.selectionToolbar.saveSuggestion.actionId = customDictionary.id
+    await storage.setItem(`local:${CONFIG_STORAGE_KEY}`, config)
+
+    const store = createStore()
+    store.set(configAtom, config)
+    renderWithProviders(<div />, store)
+
+    await act(async () => {
+      window.dispatchEvent(
+        new CustomEvent(WORD_HIGHLIGHT_LOOKUP_EVENT, {
+          detail: {
+            term: "serendipity",
+            context: "A moment of serendipity.",
+            anchor: { x: 140, y: 180 },
+          },
+        }),
+      )
+      await Promise.resolve()
+    })
+
+    await waitFor(() => {
+      expect(streamBackgroundStructuredObjectMock).toHaveBeenCalledTimes(1)
+    })
+    expect(screen.getByText("My Dictionary")).toBeInTheDocument()
+    expect(screen.getByTestId("footer-paragraphs")).toHaveTextContent("A moment of serendipity.")
   })
 
   it("renders a custom action footer tool button that opens the action options", async () => {
