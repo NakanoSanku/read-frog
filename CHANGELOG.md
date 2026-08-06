@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.48.2
+
+### Patch Changes
+
+- [`ac8a7f6`](https://github.com/NakanoSanku/read-frog/commit/ac8a7f6e9eb8129ba0f760c243ad5e2f50d17331) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - fix(vocabulary): open the configured dictionary from highlighted words
+
 ## 1.48.1
 
 ### Patch Changes
