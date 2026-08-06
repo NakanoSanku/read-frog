@@ -9,16 +9,16 @@ export function SaveToGoogleSheetsButton({
   action,
   isRunning,
   result,
-  vocabulary,
+  selectedText,
+  context,
+  sourceTitle,
 }: {
   action: SelectionToolbarCustomAction
   isRunning: boolean
   result: Record<string, unknown> | null
-  vocabulary?: {
-    term: string
-    context?: string | null
-    title?: string | null
-  }
+  selectedText: string | null
+  context?: string | null
+  sourceTitle?: string | null
 }) {
   const { save, isSaving } = useSaveToGoogleSheets()
 
@@ -35,12 +35,12 @@ export function SaveToGoogleSheetsButton({
             results: [result],
             analyticsSource: "custom_action",
           })
-          if (outcome === "saved" && vocabulary) {
+          if (outcome === "saved" && selectedText) {
             try {
               await saveVocabularyEntry({
-                term: vocabulary.term,
-                context: vocabulary.context,
-                sourceTitle: vocabulary.title,
+                term: selectedText,
+                context,
+                sourceTitle,
                 sourceUrl: window.location.href,
               })
             } catch (error) {

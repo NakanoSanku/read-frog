@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
 
+import type { ContentScriptContext } from "#imports"
 import type { SavedVocabularyEntry, WordHighlightLookupDetail } from "@/types/vocabulary"
 import { fireEvent, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
+import { fakeBrowser } from "wxt/testing/fake-browser"
 import { DEFAULT_CONFIG } from "@/utils/constants/config"
 import { WORD_HIGHLIGHT_ATTRIBUTE, WORD_HIGHLIGHT_LOOKUP_EVENT } from "@/utils/constants/vocabulary"
-import { PageWordHighlighter } from "../page-highlighter"
-import { normalizeVocabularyTerm } from "../storage"
+import { PageWordHighlighter, setupPageWordHighlighter } from "../page-highlighter"
+import { normalizeVocabularyTerm, saveVocabularyEntry } from "../storage"
 
 function entry(term: string): SavedVocabularyEntry {
   return {
@@ -22,6 +24,7 @@ describe("page word highlighter", () => {
   let highlighter: PageWordHighlighter
 
   beforeEach(() => {
+    fakeBrowser.reset()
     document.head.innerHTML = ""
     document.body.innerHTML = ""
     highlighter = new PageWordHighlighter(document)
@@ -93,6 +96,27 @@ describe("page word highlighter", () => {
       expect(suspendedAnimationFrame).not.toHaveBeenCalled()
     } finally {
       window.requestAnimationFrame = originalRequestAnimationFrame
+    }
+  })
+
+  it("highlights the current page when a saved vocabulary storage update arrives", async () => {
+    document.body.innerHTML = "<p>A moment of serendipity.</p>"
+    const invalidationCallbacks: Array<() => void> = []
+    const ctx = {
+      onInvalidated: (callback: () => void) => invalidationCallbacks.push(callback),
+    } as unknown as ContentScriptContext
+    const cleanup = await setupPageWordHighlighter(ctx, DEFAULT_CONFIG)
+
+    try {
+      await saveVocabularyEntry({ term: "serendipity" })
+
+      await waitFor(() => {
+        expect(document.querySelector(`[${WORD_HIGHLIGHT_ATTRIBUTE}]`)?.textContent).toBe(
+          "serendipity",
+        )
+      })
+    } finally {
+      cleanup()
     }
   })
 

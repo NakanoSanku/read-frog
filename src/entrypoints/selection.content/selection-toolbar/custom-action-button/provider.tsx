@@ -538,11 +538,9 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
                   action={activeAction}
                   isRunning={displayedIsRunning}
                   result={displayedResult}
-                  vocabulary={
-                    activeAction.id === BUILT_IN_DICTIONARY_ACTION_ID && cleanSelection
-                      ? { term: cleanSelection, context: paragraphsText, title: titleText }
-                      : undefined
-                  }
+                  selectedText={cleanSelection}
+                  context={paragraphsText}
+                  sourceTitle={titleText}
                 />
                 <CustomActionToolButton action={activeAction} />
               </>
