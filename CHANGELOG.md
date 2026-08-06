@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.47.1
+
+### Patch Changes
+
+- [`b282dd8`](https://github.com/NakanoSanku/read-frog/commit/b282dd8728710e2e11a496591f3bf192b1a7e43a) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - revert(providers): restore the v1.46.3 provider experience
+
 ## 1.47.0
 
 ### Minor Changes
