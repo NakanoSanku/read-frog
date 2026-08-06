@@ -79,7 +79,7 @@ export async function detectLanguageWithSource(
   }
 
   // Fallback to franc
-  const francResult = franc(trimmedText)
+  const francResult = franc(trimmedText, { minLength })
   if (francResult === "und") {
     return { code: "und", source: "fallback" }
   }
