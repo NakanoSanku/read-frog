@@ -5,7 +5,7 @@ import { useState } from "react"
 import { toastManager } from "@/components/ui/base-ui/toast"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { patchSelectionToolbarAction } from "@/utils/custom-actions"
-import { sanitizeCustomActionGoogleSheetsConnection } from "@/utils/google-sheets"
+import { sanitizeCustomActionGoogleSheetsConnection } from "@/utils/google-sheets/connection"
 import { i18n } from "@/utils/i18n"
 import { sendMessage } from "@/utils/message"
 

@@ -5,7 +5,6 @@ import { GOOGLE_DRIVE_TOKEN_STORAGE_KEY } from "../constants/config"
 import { logger } from "../logger"
 
 const GOOGLE_CLIENT_ID = env.WXT_GOOGLE_CLIENT_ID ?? "YOUR_CLIENT_ID"
-const GOOGLE_REDIRECT_URI = browser.identity.getRedirectURL()
 const GOOGLE_BASE_SCOPES = [
   "https://www.googleapis.com/auth/drive.appdata",
   "https://www.googleapis.com/auth/userinfo.email",
@@ -74,10 +73,11 @@ export async function authenticateGoogleDriveAndSaveTokenToStorage(
 ): Promise<string> {
   try {
     const requestedScopes = getRequestedScopes(requiredScopes)
+    const redirectUri = browser.identity.getRedirectURL()
     const authUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth")
     authUrl.searchParams.set("client_id", GOOGLE_CLIENT_ID)
     authUrl.searchParams.set("response_type", "token")
-    authUrl.searchParams.set("redirect_uri", GOOGLE_REDIRECT_URI)
+    authUrl.searchParams.set("redirect_uri", redirectUri)
     authUrl.searchParams.set("scope", requestedScopes.join(" "))
     authUrl.searchParams.set("prompt", "select_account")
     authUrl.searchParams.set("include_granted_scopes", "true")
