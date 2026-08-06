@@ -24,7 +24,6 @@ import {
 } from "@/utils/site-control"
 import { queryClient } from "@/utils/tanstack-query"
 import { getLocalThemeMode } from "@/utils/theme"
-import { setupPageWordHighlighter } from "@/utils/vocabulary/page-highlighter"
 import App from "./app"
 import { setupExternalSelectionSource } from "./external-selection-source"
 import "@/assets/styles/theme.css"
@@ -120,8 +119,6 @@ export default defineContentScript({
     }
 
     await initI18n(config?.uiLanguage)
-
-    await setupPageWordHighlighter(ctx, config)
 
     void mountSelectionUI(ctx)
   },

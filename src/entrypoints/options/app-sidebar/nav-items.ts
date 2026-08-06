@@ -17,7 +17,6 @@ export const ROUTE_DEFS = [
   // sidebar lists its links itself — but route exactly like any other page.
   { path: "/preference/config-backup" },
   { path: "/preference/extension-activation" },
-  { path: "/selection-toolbar/word-highlight-css" },
   { path: "/page-translation/custom-css" },
   { path: "/page-translation/prompts" },
   { path: "/page-translation/translation-control" },

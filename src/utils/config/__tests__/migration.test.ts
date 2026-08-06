@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { CONFIG_SCHEMA_VERSION } from "@/utils/constants/config"
+import { CONFIG_SCHEMA_VERSION, DEFAULT_CONFIG } from "@/utils/constants/config"
 import { ConfigVersionTooNewError } from "../errors"
 import { buildMigrationRegistry, migrateConfig } from "../migration"
 
@@ -76,6 +76,31 @@ describe("buildMigrationRegistry", () => {
 })
 
 describe("migrateConfig", () => {
+  it("accepts schema v95 configs saved before the feature rollback", async () => {
+    const config = structuredClone(DEFAULT_CONFIG)
+    const configFromV148 = {
+      ...config,
+      selectionToolbar: {
+        ...config.selectionToolbar,
+        wordHighlight: {
+          enabled: true,
+          autoSave: true,
+          autoSpeak: true,
+          style: {
+            preset: "underline",
+            isCustom: false,
+            customCSS: null,
+          },
+        },
+      },
+    }
+
+    const migrated = await migrateConfig(configFromV148, CONFIG_SCHEMA_VERSION)
+
+    expect(migrated.selectionToolbar).not.toHaveProperty("wordHighlight")
+    expect(migrated.selectionToolbar.saveSuggestion).toEqual(config.selectionToolbar.saveSuggestion)
+  })
+
   it("should throw ConfigVersionTooNewError when schema version is newer than current", async () => {
     const futureVersion = CONFIG_SCHEMA_VERSION + 1
     const config = {}

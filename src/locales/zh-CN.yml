@@ -526,33 +526,6 @@ options:
         googleSheetsDescription: 使用 AI 提供商进行划词翻译后，推荐可保存到 Google Sheets 的词条
         action: 指令
         actionDescription: 用于生成保存建议的指令
-    wordHighlight:
-      title: 生词高亮
-      enable:
-        title: 高亮已收藏词汇
-        description: 在网页和字幕中持续高亮通过词典收藏的单词或短语
-      autoSave:
-        title: 查询后自动收藏
-        description: 词典成功查询单词或短语后，自动加入生词本
-      autoSpeak:
-        title: 查询时自动发音
-        description: 打开词典时，自动朗读选中或已高亮的词汇
-      customStyle:
-        title: 使用自定义 CSS
-        description: 使用自己的 CSS 样式代替预设高亮效果
-      cssEditor:
-        title: 高亮 CSS 编辑器
-        description: 自定义网页与字幕中的 .read-frog-word-highlight
-        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
-      preset:
-        title: 高亮样式
-        description: 选择生词在页面上的显示方式
-        highlight: 记号笔高亮
-        underline: 波浪下划线
-        enlarge: 放大
-      preview: 预览
-      previewBefore: 阅读时，每个生词都可能带来
-      previewAfter: 般的意外收获。
     display:
       title: 显示
       opacity:
@@ -1225,13 +1198,6 @@ speak:
   noTextSelected: 未选择文本
   openaiNotConfigured: OpenAI 提供商未配置或未启用
   openaiApiKeyNotConfigured: OpenAI API Key 未配置
-wordHighlight:
-  save: 收藏单词
-  remove: 取消收藏
-  saved: 已收藏并开始高亮
-  removed: 已取消收藏
-  failed: 更新生词本失败
-  clickToLookUp: 单击快速查询这个生词
 action:
   copy: 复制
   copied: 已复制

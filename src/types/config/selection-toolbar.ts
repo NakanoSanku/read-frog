@@ -1,24 +1,5 @@
 import { z } from "zod"
 
-export const WORD_HIGHLIGHT_STYLE_PRESETS = ["highlight", "underline", "enlarge"] as const
-export const MAX_WORD_HIGHLIGHT_CUSTOM_CSS_LENGTH = 8192
-
-export const wordHighlightStylePresetSchema = z.enum(WORD_HIGHLIGHT_STYLE_PRESETS)
-
-export const wordHighlightConfigSchema = z.object({
-  enabled: z.boolean(),
-  autoSave: z.boolean(),
-  autoSpeak: z.boolean(),
-  style: z.object({
-    preset: wordHighlightStylePresetSchema,
-    isCustom: z.boolean(),
-    customCSS: z
-      .string()
-      .max(MAX_WORD_HIGHLIGHT_CUSTOM_CSS_LENGTH, "Custom CSS cannot exceed 8KB")
-      .nullable(),
-  }),
-})
-
 export const selectionToolbarCustomActionOutputTypeSchema = z.enum(["string", "number"])
 
 export const selectionToolbarCustomActionOutputFieldSchema = z.object({
@@ -270,5 +251,3 @@ export type SelectionToolbarBuiltInActionState = z.infer<
 >
 export type SelectionToolbarBuiltInActions = z.infer<typeof selectionToolbarBuiltInActionsSchema>
 export type SelectionToolbarCustomAction = z.infer<typeof selectionToolbarCustomActionSchema>
-export type WordHighlightConfig = z.infer<typeof wordHighlightConfigSchema>
-export type WordHighlightStylePreset = z.infer<typeof wordHighlightStylePresetSchema>

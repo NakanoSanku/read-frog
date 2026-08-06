@@ -524,33 +524,6 @@ options:
         description: AI 제공자로 선택 번역 후 Notebase에 저장할 단어를 추천합니다
         action: 작업
         actionDescription: 저장 제안을 만드는 작업
-    wordHighlight:
-      title: 저장 단어 강조
-      enable:
-        title: 저장 단어 강조
-        description: 사전에서 저장한 단어나 구문을 웹페이지와 자막에서 계속 강조합니다
-      autoSave:
-        title: 조회 후 자동 저장
-        description: 사전 조회에 성공한 단어나 구문을 자동으로 단어장에 추가합니다
-      autoSpeak:
-        title: 조회 시 자동 발음
-        description: 사전을 열 때 선택하거나 강조된 표현을 자동으로 읽습니다
-      customStyle:
-        title: 사용자 CSS 사용
-        description: 프리셋 대신 직접 만든 CSS로 저장 단어를 꾸밉니다
-      cssEditor:
-        title: 강조 CSS 편집기
-        description: 웹페이지와 자막의 .read-frog-word-highlight를 사용자 지정합니다
-        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
-      preset:
-        title: 강조 스타일
-        description: 저장 단어를 페이지에서 표시할 방식을 선택합니다
-        highlight: 형광펜
-        underline: 물결 밑줄
-        enlarge: 확대
-      preview: 미리보기
-      previewBefore: 새로운 단어는 읽는 동안
-      previewAfter: 로 이어질 수 있습니다.
     display:
       title: 표시
       opacity:
@@ -1068,13 +1041,6 @@ speak:
   noTextSelected: 텍스트가 선택되지 않았습니다
   openaiNotConfigured: OpenAI 공급자가 구성되지 않았거나 활성화되지 않았습니다
   openaiApiKeyNotConfigured: OpenAI API 키가 구성되지 않았습니다
-wordHighlight:
-  save: 단어 저장
-  remove: 저장 단어에서 삭제
-  saved: 단어를 저장하고 강조를 시작했습니다
-  removed: 저장 단어에서 삭제했습니다
-  failed: 저장 단어를 업데이트하지 못했습니다
-  clickToLookUp: 클릭하여 이 저장 단어 조회
 action:
   copy: 복사
   copied: 복사됨

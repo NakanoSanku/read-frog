@@ -524,33 +524,6 @@ options:
         description: AI プロバイダーで選択テキストを翻訳した後、Notebase に保存する単語を提案します
         action: アクション
         actionDescription: 保存候補を生成するアクション
-    wordHighlight:
-      title: 保存単語のハイライト
-      enable:
-        title: 保存単語をハイライト
-        description: 辞書から保存した単語やフレーズをウェブページと字幕で常にハイライトします
-      autoSave:
-        title: 検索後に自動保存
-        description: 辞書検索が成功した単語やフレーズを自動的に単語帳へ追加します
-      autoSpeak:
-        title: 検索時に自動発音
-        description: 辞書を開いたとき、選択またはハイライトされた語句を自動で読み上げます
-      customStyle:
-        title: カスタム CSS を使用
-        description: プリセットの代わりに独自の CSS で保存単語を装飾します
-      cssEditor:
-        title: ハイライト CSS エディター
-        description: ウェブページと字幕の .read-frog-word-highlight をカスタマイズします
-        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
-      preset:
-        title: ハイライトスタイル
-        description: 保存単語をページ上でどう目立たせるか選択します
-        highlight: マーカーハイライト
-        underline: 波線
-        enlarge: 拡大
-      preview: プレビュー
-      previewBefore: 新しい単語は読書中の
-      previewAfter: につながります。
     display:
       title: 表示
       opacity:
@@ -1068,13 +1041,6 @@ speak:
   noTextSelected: テキストが選択されていません
   openaiNotConfigured: OpenAIプロバイダーが設定されていないか有効になっていません
   openaiApiKeyNotConfigured: OpenAI APIキーが設定されていません
-wordHighlight:
-  save: 単語を保存
-  remove: 保存単語から削除
-  saved: 単語を保存し、ハイライトを開始しました
-  removed: 保存単語から削除しました
-  failed: 保存単語を更新できませんでした
-  clickToLookUp: クリックしてこの保存単語を検索
 action:
   copy: コピー
   copied: コピー済み

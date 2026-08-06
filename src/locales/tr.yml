@@ -524,33 +524,6 @@ options:
         description: Bir yapay zekâ sağlayıcısıyla seçim çevirisinden sonra Notebase'inize kaydedilecek kelimeler önerilir
         action: Eylem
         actionDescription: Öneriyi üreten eylem
-    wordHighlight:
-      title: Kaydedilen kelimeleri vurgulama
-      enable:
-        title: Kaydedilen kelimeleri vurgula
-        description: Sözlükten kaydedilen kelime ve ifadeleri web sayfalarında ve altyazılarda sürekli vurgula
-      autoSave:
-        title: Aramadan sonra kaydet
-        description: Başarılı bir Sözlük aramasından sonra kelimeyi veya ifadeyi otomatik olarak ekle
-      autoSpeak:
-        title: Aramada seslendir
-        description: Sözlük açıldığında seçili veya vurgulanmış ifadeyi otomatik olarak seslendir
-      customStyle:
-        title: Özel CSS kullan
-        description: Hazır stil yerine kaydedilen kelimeleri kendi CSS'inizle biçimlendirin
-      cssEditor:
-        title: Vurgu CSS düzenleyicisi
-        description: Web sayfaları ve altyazılardaki .read-frog-word-highlight stilini özelleştirin
-        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
-      preset:
-        title: Vurgu stili
-        description: Kaydedilen kelimelerin sayfada nasıl öne çıkacağını seçin
-        highlight: İşaretleyici
-        underline: Dalgalı alt çizgi
-        enlarge: Büyüt
-      preview: Önizleme
-      previewBefore: Her yeni kelime okurken sizi
-      previewAfter: götürebilir.
     display:
       title: Görünüm
       opacity:
@@ -1068,13 +1041,6 @@ speak:
   noTextSelected: Metin seçilmedi
   openaiNotConfigured: OpenAI sağlayıcısı yapılandırılmadı veya etkinleştirilmedi
   openaiApiKeyNotConfigured: OpenAI API anahtarı yapılandırılmadı
-wordHighlight:
-  save: Kelimeyi kaydet
-  remove: Kaydedilenlerden kaldır
-  saved: Kelime kaydedildi ve vurgulama etkin
-  removed: Kelime kaydedilenlerden kaldırıldı
-  failed: Kaydedilen kelimeler güncellenemedi
-  clickToLookUp: Bu kaydedilen kelimeyi aramak için tıklayın
 action:
   copy: Kopyala
   copied: Kopyalandı

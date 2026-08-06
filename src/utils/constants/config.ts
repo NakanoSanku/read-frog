@@ -48,6 +48,8 @@ export const GOOGLE_DRIVE_TOKEN_STORAGE_KEY = "__googleDriveToken"
 
 export const THEME_STORAGE_KEY = "theme"
 export const DEFAULT_DETECTED_CODE = "eng" as const
+// v1.48.x already persisted schema v95. Keep the version and its frozen migration so
+// rolling the feature code back does not make existing configs look newer than the app.
 export const CONFIG_SCHEMA_VERSION = 95
 
 export const DEFAULT_FLOATING_BUTTON_POSITION = 0.66
@@ -158,16 +160,6 @@ export const DEFAULT_CONFIG: Config = {
     saveSuggestion: {
       enabled: true,
       actionId: BUILT_IN_DICTIONARY_ACTION_ID,
-    },
-    wordHighlight: {
-      enabled: true,
-      autoSave: false,
-      autoSpeak: false,
-      style: {
-        preset: "highlight",
-        isCustom: false,
-        customCSS: null,
-      },
     },
   },
   sideContent: {

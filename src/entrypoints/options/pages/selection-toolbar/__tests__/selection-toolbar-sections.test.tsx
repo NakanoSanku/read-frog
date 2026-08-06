@@ -7,7 +7,6 @@ import { DEFAULT_CONFIG } from "@/utils/constants/config"
 import { ActionsSection } from "../actions"
 import { DisplaySection } from "../display"
 import { EnableItem } from "../enable-item"
-import { WordHighlightSection } from "../word-highlight"
 
 const { selectionToolbarAtom, setSelectionToolbarMock, testState } = vi.hoisted(() => ({
   selectionToolbarAtom: {},
@@ -83,21 +82,6 @@ describe("selection toolbar page sections", () => {
         "example.com",
         ...selectionToolbar.disabledSelectionToolbarPatterns,
       ],
-    })
-  })
-
-  it("enables automatic saving without changing the other word highlight preferences", () => {
-    const selectionToolbar = testState.selectionToolbar!
-
-    render(<WordHighlightSection />)
-    const switches = screen.getAllByRole("switch")
-    fireEvent.click(switches[1]!)
-
-    expect(setSelectionToolbarMock).toHaveBeenCalledWith({
-      wordHighlight: {
-        ...selectionToolbar.wordHighlight,
-        autoSave: true,
-      },
     })
   })
 })

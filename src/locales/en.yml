@@ -526,33 +526,6 @@ options:
         googleSheetsDescription: After selection translation with an AI provider, suggest words to save to Google Sheets
         action: Action
         actionDescription: The action that produces the suggestion
-    wordHighlight:
-      title: Saved word highlighting
-      enable:
-        title: Highlight saved words
-        description: Keep words and phrases saved from Dictionary highlighted on web pages and subtitles
-      autoSave:
-        title: Save after lookup
-        description: Automatically add a word or phrase after a successful Dictionary lookup
-      autoSpeak:
-        title: Pronounce on lookup
-        description: Automatically pronounce the selected or highlighted term when Dictionary opens
-      customStyle:
-        title: Use custom CSS
-        description: Style saved words with your own CSS instead of a preset
-      cssEditor:
-        title: Highlight CSS editor
-        description: Customize .read-frog-word-highlight on web pages and subtitles
-        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
-      preset:
-        title: Highlight style
-        description: Choose how saved words stand out on the page
-        highlight: Marker highlight
-        underline: Wavy underline
-        enlarge: Enlarge
-      preview: Preview
-      previewBefore: Every new word can lead to
-      previewAfter: while you read.
     display:
       title: Display
       opacity:
@@ -1225,13 +1198,6 @@ speak:
   noTextSelected: No text selected
   openaiNotConfigured: OpenAI provider is not configured or enabled
   openaiApiKeyNotConfigured: OpenAI API key is not configured
-wordHighlight:
-  save: Save word
-  remove: Remove from saved words
-  saved: Word saved and highlighting is now active
-  removed: Word removed from saved words
-  failed: Failed to update saved words
-  clickToLookUp: Click to look up this saved word
 action:
   copy: Copy
   copied: Copied

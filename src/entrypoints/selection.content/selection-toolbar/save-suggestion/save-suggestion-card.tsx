@@ -8,12 +8,10 @@ import { Label } from "@/components/ui/base-ui/label"
 import { Switch } from "@/components/ui/base-ui/switch"
 import { toastManager } from "@/components/ui/base-ui/toast"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
-import { BUILT_IN_DICTIONARY_ACTION_ID } from "@/utils/constants/custom-action"
 import { findSelectionToolbarAction } from "@/utils/custom-actions"
 import { i18n } from "@/utils/i18n"
 import { getOutputSchemaFingerprint } from "@/utils/notebase/pending-save"
 import { trackSaveSuggestionEvent } from "@/utils/save-suggestion/analytics"
-import { saveVocabularyEntry } from "@/utils/vocabulary/storage"
 import { useSaveToGoogleSheets } from "../custom-action-button/use-save-to-google-sheets"
 
 function formatNoteValue(value: string | number | null): string | null {
@@ -112,22 +110,6 @@ export function SaveSuggestionCard({
       analyticsProvider,
     })
     if (outcome === "saved") {
-      if (liveAction.id === BUILT_IN_DICTIONARY_ACTION_ID) {
-        try {
-          await Promise.all(
-            validated.notes.map(async (note) => {
-              const term = formatNoteValue(note[primaryFieldName] ?? null)
-              if (term) await saveVocabularyEntry({ term })
-            }),
-          )
-        } catch (error) {
-          toastManager.add({
-            type: "error",
-            title: i18n.t("wordHighlight.failed"),
-            description: error instanceof Error ? error.message : String(error),
-          })
-        }
-      }
       setSaveState("saved")
       trackSaveSuggestionEvent("suggestion_accepted", {
         startedAt: firedAt,

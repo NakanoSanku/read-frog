@@ -525,33 +525,6 @@ options:
         description: Después de traducir una selección con un proveedor de IA, sugerir palabras para guardar en tu Notebase
         action: Acción
         actionDescription: La acción que genera la sugerencia
-    wordHighlight:
-      title: Resaltado de palabras guardadas
-      enable:
-        title: Resaltar palabras guardadas
-        description: Mantén resaltadas en páginas web y subtítulos las palabras y frases guardadas desde el Diccionario
-      autoSave:
-        title: Guardar después de consultar
-        description: Añade automáticamente una palabra o frase después de una consulta correcta en el Diccionario
-      autoSpeak:
-        title: Pronunciar al consultar
-        description: Pronuncia automáticamente el término seleccionado o resaltado al abrir el Diccionario
-      customStyle:
-        title: Usar CSS personalizado
-        description: Aplica tu propio CSS a las palabras guardadas en lugar de un estilo predefinido
-      cssEditor:
-        title: Editor CSS de resaltado
-        description: Personaliza .read-frog-word-highlight en páginas web y subtítulos
-        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
-      preset:
-        title: Estilo de resaltado
-        description: Elige cómo se distinguen las palabras guardadas en la página
-        highlight: Marcador
-        underline: Subrayado ondulado
-        enlarge: Ampliar
-      preview: Vista previa
-      previewBefore: Cada palabra nueva puede llevarte a
-      previewAfter: mientras lees.
     display:
       title: Visualización
       opacity:
@@ -1184,13 +1157,6 @@ speak:
   noTextSelected: No hay texto seleccionado
   openaiNotConfigured: El proveedor OpenAI no está configurado o activado
   openaiApiKeyNotConfigured: La clave API de OpenAI no está configurada
-wordHighlight:
-  save: Guardar palabra
-  remove: Quitar de palabras guardadas
-  saved: Palabra guardada y resaltado activado
-  removed: Palabra eliminada de las guardadas
-  failed: No se pudieron actualizar las palabras guardadas
-  clickToLookUp: Haz clic para consultar esta palabra guardada
 action:
   copy: Copiar
   copied: Copiado

@@ -16,7 +16,6 @@ import { isLLMProvider, providersConfigSchema } from "./provider"
 import {
   selectionToolbarBuiltInActionsSchema,
   selectionToolbarCustomActionsSchema,
-  wordHighlightConfigSchema,
 } from "./selection-toolbar"
 import { siteRulesConfigSchema } from "./site-rules"
 import { videoSubtitlesSchema } from "./subtitles"
@@ -54,18 +53,6 @@ const selectionToolbarSchema = z
     saveSuggestion: z.object({
       enabled: z.boolean(),
       actionId: z.string().nonempty(),
-    }),
-    // Keep pre-v095 configs readable while the background migration and an options/content
-    // page can briefly overlap during an extension update.
-    wordHighlight: wordHighlightConfigSchema.default({
-      enabled: true,
-      autoSave: false,
-      autoSpeak: false,
-      style: {
-        preset: "highlight",
-        isCustom: false,
-        customCSS: null,
-      },
     }),
   })
   .superRefine((selectionToolbar, ctx) => {
