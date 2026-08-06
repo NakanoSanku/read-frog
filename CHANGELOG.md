@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.47.0
+
+### Minor Changes
+
+- [`570f34b`](https://github.com/NakanoSanku/read-frog/commit/570f34b6fec37495654bc01615c20a6e4c84a818) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - feat(providers): focus provider setup on CLIProxyAPI and grok2api
+
 ## 1.46.3
 
 ### Patch Changes
