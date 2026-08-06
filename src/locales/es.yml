@@ -126,7 +126,7 @@ options:
   apiProviders:
     title: Proveedores de API
     pageDescription: Conecta los servicios de IA que usa Read Frog y elige cuál se encarga de cada función.
-    description: Añade los proveedores que Read Frog puede llamar. Más de 20 vienen integrados y puedes añadir API personalizadas compatibles con Chat Completions u Open Responses.
+    description: Conecta Read Frog con CLIProxyAPI o grok2api. Los modelos se cargan directamente desde cada puerta de enlace.
     configTitle: Configuración de proveedores
     addProvider: Añadir proveedor
     builtInProvider: Proveedor integrado
@@ -143,8 +143,8 @@ options:
           title: Proveedores LLM integrados
           description: Proveedores integrados de modelos de lenguaje grandes; no hace falta completar la mayoría de configuraciones, como Base URL
         compatibleProviders:
-          title: Proveedores de API compatibles
-          description: Usa Personalizado Chat Complete para API compatibles con Chat Completions o Personalizado Responses para API Open Responses.
+          title: Proveedores de puerta de enlace
+          description: Usa CLIProxyAPI como puerta de enlace multiproveedor o grok2api para acceder a modelos Grok.
         pureTranslationProviders:
           title: Proveedores de traducción pura
           description: Proveedores centrados en funciones de traducción sin capacidades de modelos de lenguaje grandes
@@ -212,6 +212,8 @@ options:
         builtInAi: IA integrada
         customChatComplete: Personalizado Chat Complete
         customResponses: Personalizado Responses
+        cliProxyApi: CLIProxyAPI
+        grok2api: grok2api
       attribution:
         builtInAi: Proporcionado por Atlas Cloud. Actualmente solo está disponible para acciones de IA personalizadas. Para desbloquear una experiencia sin restricciones, compra créditos muy rentables en el sitio web oficial.
       description:
@@ -228,6 +230,8 @@ options:
         tensdaq: Plataforma revolucionaria de pujas AI MaaS con precios impulsados por el mercado, que elimina los altos precios fijos
         openaiCompatible: Conecta un endpoint personalizado compatible con la API Chat Completions de OpenAI
         openResponses: Conecta un endpoint personalizado compatible con la API Open Responses
+        cliProxyApi: Conecta una puerta de enlace CLIProxyAPI y carga dinámicamente sus modelos disponibles
+        grok2api: Conecta una puerta de enlace grok2api y carga dinámicamente sus modelos Grok disponibles
         deeplx: API de DeepL no oficial
         deepl: API oficial de DeepL
         bedrock: Servicio administrado de AWS para modelos fundacionales de nivel empresarial

@@ -187,6 +187,67 @@ describe("getModelById", () => {
     expect(openAICompatibleLanguageModelMock).toHaveBeenCalledWith("x-ai/grok-4-fast:free")
   })
 
+  it("uses the normalized CLIProxyAPI base and permits a keyless local gateway", async () => {
+    getStorageItemMock.mockResolvedValue({
+      providersConfig: [
+        {
+          id: "cli-proxy-api-default",
+          name: "CLIProxyAPI",
+          enabled: true,
+          provider: "cli-proxy-api",
+          baseURL: "http://127.0.0.1:8317/v1/chat/completions",
+          model: {
+            model: "use-custom-model",
+            isCustomModel: true,
+            customModel: "claude-sonnet-4-5",
+          },
+        },
+      ],
+    })
+
+    const { getModelById } = await import("../model")
+    const result = await getModelById("cli-proxy-api-default")
+
+    expect(result).toBe("custom-model")
+    expect(createOpenAICompatibleMock).toHaveBeenCalledWith({
+      name: "cli-proxy-api",
+      baseURL: "http://127.0.0.1:8317/v1",
+      supportsStructuredOutputs: true,
+    })
+    expect(openAICompatibleLanguageModelMock).toHaveBeenCalledWith("claude-sonnet-4-5")
+  })
+
+  it("passes grok2api credentials through the OpenAI-compatible adapter", async () => {
+    getStorageItemMock.mockResolvedValue({
+      providersConfig: [
+        {
+          id: "grok2api-default",
+          name: "grok2api",
+          enabled: true,
+          provider: "grok2api",
+          baseURL: "http://127.0.0.1:8000",
+          apiKey: "grok-key",
+          model: {
+            model: "use-custom-model",
+            isCustomModel: true,
+            customModel: "grok-4",
+          },
+        },
+      ],
+    })
+
+    const { getModelById } = await import("../model")
+    await getModelById("grok2api-default")
+
+    expect(createOpenAICompatibleMock).toHaveBeenCalledWith({
+      name: "grok2api",
+      baseURL: "http://127.0.0.1:8000/v1",
+      apiKey: "grok-key",
+      supportsStructuredOutputs: true,
+    })
+    expect(openAICompatibleLanguageModelMock).toHaveBeenCalledWith("grok-4")
+  })
+
   it("passes Ollama root base URL and disables think on the language model", async () => {
     getStorageItemMock.mockResolvedValue({
       providersConfig: [createOllamaProviderConfig({ think: true })],

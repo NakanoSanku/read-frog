@@ -29,6 +29,22 @@ describe("ConnectionTestButton", () => {
     mutationMock.reset.mockReset()
   })
 
+  it("allows testing a local CLIProxyAPI without an API key", () => {
+    render(<ConnectionTestButton providerConfig={DEFAULT_PROVIDER_CONFIG["cli-proxy-api"]} />)
+
+    expect(
+      screen.getByRole("button", { name: "options.apiProviders.testConnection.button" }),
+    ).toBeEnabled()
+  })
+
+  it("requires the grok2api client key", () => {
+    render(<ConnectionTestButton providerConfig={DEFAULT_PROVIDER_CONFIG.grok2api} />)
+
+    expect(
+      screen.getByRole("button", { name: "options.apiProviders.testConnection.button" }),
+    ).toBeDisabled()
+  })
+
   it("clears successful feedback when the Open Responses endpoint changes", async () => {
     const providerConfig = {
       ...DEFAULT_PROVIDER_CONFIG["open-responses"],

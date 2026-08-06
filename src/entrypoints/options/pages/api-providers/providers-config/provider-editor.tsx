@@ -35,10 +35,6 @@ import {
 import { API_PROVIDER_ITEMS } from "@/utils/constants/providers"
 import { getSelectionToolbarActions, patchSelectionToolbarAction } from "@/utils/custom-actions"
 import { i18n } from "@/utils/i18n"
-import {
-  BUILT_IN_AI_PROVIDER_ID,
-  BUILT_IN_AI_PROVIDER_LOGO,
-} from "@/utils/providers/provider-registry"
 import { cn } from "@/utils/styles/utils"
 import { APIKeyField } from "./provider-config-form/api-key-field"
 import { AdvancedOptionsSection } from "./provider-config-form/components/advanced-options-section"
@@ -162,18 +158,6 @@ function useProviderEditorValue({
   }
 }
 
-function BuiltInProvider({ children }: { children: React.ReactNode }) {
-  const value = useProviderEditorValue({
-    identity: {
-      id: BUILT_IN_AI_PROVIDER_ID,
-      logo: BUILT_IN_AI_PROVIDER_LOGO,
-      name: i18n.t("options.apiProviders.providers.name.builtInAi"),
-    },
-  })
-
-  return <ProviderEditorContext value={value}>{children}</ProviderEditorContext>
-}
-
 export function useProviderForm(
   providerConfig: APIProviderConfig,
   save: (providerConfig: APIProviderConfig) => Promise<void>,
@@ -246,18 +230,6 @@ function Identity() {
       size="base"
       textClassName="font-medium"
     />
-  )
-}
-
-function Attribution({ children }: { children: React.ReactNode }) {
-  return <p className="text-sm leading-6 text-muted-foreground">{children}</p>
-}
-
-function SponsorCTA({ children, href }: { children: React.ReactNode; href: string }) {
-  return (
-    <Button variant="brand" render={<a href={href} target="_blank" rel="noreferrer" />}>
-      {children}
-    </Button>
   )
 }
 
@@ -519,8 +491,6 @@ function DeleteButton() {
 export const ProviderEditor = {
   Form,
   Identity,
-  Attribution,
-  SponsorCTA,
   ConfigHeader,
   NameField,
   DescriptionField,
@@ -535,10 +505,6 @@ export const ProviderEditor = {
   CustomActionAssignments,
   DuplicateButton,
   DeleteButton,
-}
-
-export const BuiltInProviderEditor = {
-  Provider: BuiltInProvider,
 }
 
 export const CustomProviderEditor = {

@@ -13,6 +13,7 @@ import { TooltipProvider } from "@/components/ui/base-ui/tooltip"
 import { isLLMProviderConfig } from "@/types/config/provider"
 import { configAtom } from "@/utils/atoms/config"
 import { DEFAULT_CONFIG } from "@/utils/constants/config"
+import { DEFAULT_PROVIDER_CONFIG } from "@/utils/constants/providers"
 import { getBuiltInDictionaryAction } from "@/utils/custom-actions"
 import { buildContextSnapshot, createRangeSnapshot, normalizeSelectedText } from "../../utils"
 import { setSelectionStateAtom } from "../atoms"
@@ -33,6 +34,15 @@ const hotkeyRegisterMock = vi.fn<(...args: any[]) => any>()
 const hotkeyUnregisterMock = vi.fn<(...args: any[]) => any>()
 const originalGetSelection = window.getSelection
 const DEFAULT_DICTIONARY_ACTION = getBuiltInDictionaryAction(DEFAULT_CONFIG.selectionToolbar)
+
+vi.mock("@/utils/atoms/storage-adapter", () => ({
+  storageAdapter: {
+    get: vi.fn<(...args: any[]) => any>(() => new Promise(() => {})),
+    set: vi.fn<(...args: any[]) => any>().mockResolvedValue(undefined),
+    setMeta: vi.fn<(...args: any[]) => any>().mockResolvedValue(undefined),
+    watch: vi.fn<(...args: any[]) => any>(() => () => {}),
+  },
+}))
 
 vi.mock("@tanstack/hotkeys", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/hotkeys")>()
@@ -358,7 +368,13 @@ vi.mock("@/utils/message", () => ({
 }))
 
 function cloneConfig(config: Config): Config {
-  return JSON.parse(JSON.stringify(config)) as Config
+  const cloned = JSON.parse(JSON.stringify(config)) as Config
+  if (config === DEFAULT_CONFIG) {
+    cloned.providersConfig.push(structuredClone(DEFAULT_PROVIDER_CONFIG["microsoft-translate"]))
+    cloned.selectionToolbar.features.translate.providerId =
+      DEFAULT_PROVIDER_CONFIG["microsoft-translate"].id
+  }
+  return cloned
 }
 
 function createRangeFor(node: Node) {
@@ -855,7 +871,7 @@ describe("selection toolbar requests", () => {
     renderWithProviders(<TranslateButton />, store)
 
     const updatedConfig = cloneConfig(store.get(configAtom))
-    setSelectionToolbarTranslateProvider(updatedConfig, "openai-default")
+    setSelectionToolbarTranslateProvider(updatedConfig, "cli-proxy-api-default")
     act(() => {
       store.set(configAtom, updatedConfig)
     })
@@ -897,7 +913,7 @@ describe("selection toolbar requests", () => {
 
     const store = createStore()
     const updatedConfig = cloneConfig(DEFAULT_CONFIG)
-    setSelectionToolbarTranslateProvider(updatedConfig, "openai-default")
+    setSelectionToolbarTranslateProvider(updatedConfig, "cli-proxy-api-default")
     store.set(configAtom, updatedConfig)
     setSelectionState(store, { text: "Selected text" })
     renderWithProviders(<TranslateButton />, store)

@@ -22,6 +22,8 @@ export const TRANSLATE_PROVIDER_TYPES = [
   "google",
   "anthropic",
   "xai",
+  "cli-proxy-api",
+  "grok2api",
   "openai-compatible",
   "open-responses",
   "atlascloud",
@@ -58,6 +60,8 @@ export const LLM_PROVIDER_TYPES = [
   "google",
   "anthropic",
   "xai",
+  "cli-proxy-api",
+  "grok2api",
   "openai-compatible",
   "open-responses",
   "atlascloud",
@@ -92,6 +96,8 @@ const OPENAI_COMPATIBLE_CUSTOM_LLM_PROVIDER_TYPE = "openai-compatible"
 const OPEN_RESPONSES_CUSTOM_LLM_PROVIDER_TYPE = "open-responses"
 
 const HOSTED_OPENAI_COMPATIBLE_LLM_PROVIDER_TYPES = [
+  "cli-proxy-api",
+  "grok2api",
   "atlascloud",
   "openrouter",
   "minimax",
@@ -137,6 +143,8 @@ export function isProtocolCompatibleLLMProvider(
 export const CUSTOM_MODEL_ONLY_PROVIDER_TYPES = [
   OPENAI_COMPATIBLE_CUSTOM_LLM_PROVIDER_TYPE,
   OPEN_RESPONSES_CUSTOM_LLM_PROVIDER_TYPE,
+  "cli-proxy-api",
+  "grok2api",
 ] as const satisfies Readonly<ProtocolCompatibleLLMProviderTypes[]>
 export type CustomModelOnlyProviderTypes = (typeof CUSTOM_MODEL_ONLY_PROVIDER_TYPES)[number]
 export function isCustomModelOnlyProvider(
@@ -176,6 +184,8 @@ export function isDedicatedLLMProvider(provider: string): provider is DedicatedL
 export const API_PROVIDER_TYPES = [
   "openai-compatible",
   "open-responses",
+  "cli-proxy-api",
+  "grok2api",
   "atlascloud",
   "openrouter",
   "minimax",
@@ -211,6 +221,16 @@ export function isAPIProvider(provider: string): provider is APIProviderTypes {
   return API_PROVIDER_TYPES.includes(provider)
 }
 
+/** Provider types exposed by this distribution for new configurations. */
+export const AVAILABLE_API_PROVIDER_TYPES = [
+  "cli-proxy-api",
+  "grok2api",
+] as const satisfies Readonly<APIProviderTypes[]>
+export type AvailableAPIProviderTypes = (typeof AVAILABLE_API_PROVIDER_TYPES)[number]
+export function isAvailableAPIProvider(provider: string): provider is AvailableAPIProviderTypes {
+  return AVAILABLE_API_PROVIDER_TYPES.includes(provider)
+}
+
 export const PURE_API_PROVIDER_TYPES = ["deeplx", "deepl"] as const satisfies Readonly<
   Exclude<APIProviderTypes, LLMProviderTypes>[]
 >
@@ -232,6 +252,8 @@ export const ALL_PROVIDER_TYPES = [
   "deepl",
   "openai-compatible",
   "open-responses",
+  "cli-proxy-api",
+  "grok2api",
   "atlascloud",
   "openrouter",
   "minimax",
@@ -274,6 +296,8 @@ export const AI_SDK_REASONING_VALUES = [
 export type AISDKReasoning = (typeof AI_SDK_REASONING_VALUES)[number]
 
 export const TOP_LEVEL_REASONING_PROVIDER_TYPES = [
+  "cli-proxy-api",
+  "grok2api",
   "openai",
   "anthropic",
   "google",

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 import {
   API_PROVIDER_TYPES,
+  AVAILABLE_API_PROVIDER_TYPES,
   CUSTOM_MODEL_ONLY_PROVIDER_TYPES,
   DEDICATED_LLM_PROVIDER_TYPES,
   LLM_PROVIDER_TYPES,
@@ -13,6 +14,7 @@ import {
 } from "@/types/config/provider"
 import {
   DEFAULT_PROVIDER_CONFIG,
+  DEFAULT_PROVIDER_CONFIG_LIST,
   PROVIDER_GROUPS,
   PROVIDER_ITEMS,
   PROVIDER_URL_PLACEHOLDERS,
@@ -53,6 +55,8 @@ describe("provider constants", () => {
 
   it("defines provider-specific URL placeholders", () => {
     expect(PROVIDER_URL_PLACEHOLDERS.atlascloud).toBe("https://api.atlascloud.ai/v1")
+    expect(PROVIDER_URL_PLACEHOLDERS["cli-proxy-api"]).toBe("http://127.0.0.1:8317/v1")
+    expect(PROVIDER_URL_PLACEHOLDERS.grok2api).toBe("http://127.0.0.1:8000/v1")
     expect(PROVIDER_URL_PLACEHOLDERS.azure).toBe("https://<resource>.services.ai.azure.com/openai")
     expect(PROVIDER_URL_PLACEHOLDERS.openai).toBe("https://api.openai.com/v1")
     expect(PROVIDER_URL_PLACEHOLDERS["openai-compatible"]).toBe("https://api.example.com/v1")
@@ -82,6 +86,8 @@ describe("provider constants", () => {
   it("defines disjoint and exhaustive protocol-adapter taxonomies", () => {
     expect(OPENAI_COMPATIBLE_LLM_PROVIDER_TYPES).toEqual([
       "openai-compatible",
+      "cli-proxy-api",
+      "grok2api",
       "atlascloud",
       "openrouter",
       "minimax",
@@ -93,11 +99,16 @@ describe("provider constants", () => {
     expect(PROTOCOL_COMPATIBLE_LLM_PROVIDER_TYPES.slice(0, 5)).toEqual([
       "openai-compatible",
       "open-responses",
+      "cli-proxy-api",
+      "grok2api",
       "atlascloud",
-      "openrouter",
-      "minimax",
     ])
-    expect(CUSTOM_MODEL_ONLY_PROVIDER_TYPES).toEqual(["openai-compatible", "open-responses"])
+    expect(CUSTOM_MODEL_ONLY_PROVIDER_TYPES).toEqual([
+      "openai-compatible",
+      "open-responses",
+      "cli-proxy-api",
+      "grok2api",
+    ])
 
     const openAICompatibleTypes = new Set<string>(OPENAI_COMPATIBLE_LLM_PROVIDER_TYPES)
     const openResponsesTypes = new Set<string>(OPEN_RESPONSES_LLM_PROVIDER_TYPES)
@@ -173,10 +184,28 @@ describe("provider constants", () => {
   })
 
   it("groups both protocol adapters under the compatible providers key", () => {
-    expect(PROVIDER_GROUPS.compatibleProviders.types).toEqual(
-      PROTOCOL_COMPATIBLE_LLM_PROVIDER_TYPES,
-    )
+    expect(PROVIDER_GROUPS.compatibleProviders.types).toEqual(AVAILABLE_API_PROVIDER_TYPES)
     expect(PROVIDER_GROUPS).not.toHaveProperty("openaiCompatibleProviders")
+  })
+
+  it("exposes only CLIProxyAPI and grok2api in fresh provider configuration", () => {
+    expect(AVAILABLE_API_PROVIDER_TYPES).toEqual(["cli-proxy-api", "grok2api"])
+    expect(DEFAULT_PROVIDER_CONFIG_LIST).toEqual([
+      DEFAULT_PROVIDER_CONFIG["cli-proxy-api"],
+      DEFAULT_PROVIDER_CONFIG.grok2api,
+    ])
+    expect(DEFAULT_PROVIDER_CONFIG_LIST).toEqual([
+      expect.objectContaining({
+        id: "cli-proxy-api-default",
+        baseURL: "http://127.0.0.1:8317/v1",
+        model: { model: "use-custom-model", isCustomModel: true, customModel: null },
+      }),
+      expect.objectContaining({
+        id: "grok2api-default",
+        baseURL: "http://127.0.0.1:8000/v1",
+        model: { model: "use-custom-model", isCustomModel: true, customModel: null },
+      }),
+    ])
   })
 
   it("places Azure immediately before Bedrock in provider pickers", () => {
@@ -186,9 +215,10 @@ describe("provider constants", () => {
     expect(API_PROVIDER_TYPES.indexOf("azure")).toBe(API_PROVIDER_TYPES.indexOf("bedrock") - 1)
   })
 
-  it("defaults top-level reasoning providers to none", () => {
+  it("defaults top-level reasoning providers consistently", () => {
     for (const provider of TOP_LEVEL_REASONING_PROVIDER_TYPES) {
-      expect(DEFAULT_PROVIDER_CONFIG[provider].reasoning).toBe("none")
+      const expected = AVAILABLE_API_PROVIDER_TYPES.includes(provider) ? "provider-default" : "none"
+      expect(DEFAULT_PROVIDER_CONFIG[provider].reasoning).toBe(expected)
       expect(apiProviderConfigItemSchema.parse(DEFAULT_PROVIDER_CONFIG[provider])).toEqual(
         DEFAULT_PROVIDER_CONFIG[provider],
       )

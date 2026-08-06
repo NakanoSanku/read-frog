@@ -17,21 +17,21 @@ describe("config utilities", () => {
       })
     }
 
-    it("should remove apiKey from OpenAI provider config", () => {
-      const openaiConfigFromConstants = DEFAULT_PROVIDER_CONFIG_LIST.find(
-        (config) => config.provider === "openai",
+    it("should remove apiKey from CLIProxyAPI provider config", () => {
+      const cliProxyConfigFromConstants = DEFAULT_PROVIDER_CONFIG_LIST.find(
+        (config) => config.provider === "cli-proxy-api",
       )!
-      const openaiConfigWithApiKey = {
-        ...openaiConfigFromConstants,
+      const cliProxyConfigWithApiKey = {
+        ...cliProxyConfigFromConstants,
         apiKey: "sk-1234567890abcdef",
       }
 
-      const result = getObjectWithoutAPIKeys(openaiConfigWithApiKey)
+      const result = getObjectWithoutAPIKeys(cliProxyConfigWithApiKey)
 
       expect(result).not.toHaveProperty("apiKey")
-      expect(result.name).toBe(openaiConfigFromConstants.name)
-      expect(result.provider).toBe("openai")
-      expect(result.model).toEqual(openaiConfigFromConstants.model)
+      expect(result.name).toBe(cliProxyConfigFromConstants.name)
+      expect(result.provider).toBe("cli-proxy-api")
+      expect(result.model).toEqual(cliProxyConfigFromConstants.model)
       expect(hasAPIKey(result)).toBe(false)
     })
 

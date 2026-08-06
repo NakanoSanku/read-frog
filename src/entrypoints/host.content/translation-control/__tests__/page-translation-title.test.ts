@@ -2,6 +2,7 @@
 
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { DEFAULT_CONFIG } from "@/utils/constants/config"
+import { DEFAULT_PROVIDER_CONFIG } from "@/utils/constants/providers"
 import { PageTranslationManager } from "../page-translation"
 
 const {
@@ -107,6 +108,10 @@ async function flushDomUpdates(): Promise<void> {
   await Promise.resolve()
 }
 
+const NON_LLM_CONFIG = structuredClone(DEFAULT_CONFIG)
+NON_LLM_CONFIG.providersConfig.push(structuredClone(DEFAULT_PROVIDER_CONFIG["microsoft-translate"]))
+NON_LLM_CONFIG.translate.providerId = DEFAULT_PROVIDER_CONFIG["microsoft-translate"].id
+
 describe("pageTranslationManager title handling", () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -118,7 +123,7 @@ describe("pageTranslationManager title handling", () => {
     vi.stubGlobal("IntersectionObserver", MockIntersectionObserver)
 
     mockGetDetectedCodeFromStorage.mockResolvedValue("eng")
-    mockGetLocalConfig.mockResolvedValue(DEFAULT_CONFIG)
+    mockGetLocalConfig.mockResolvedValue(NON_LLM_CONFIG)
     mockDeepQueryTopLevelSelector.mockReturnValue([])
     mockGetOrCreateWebPageContext.mockResolvedValue({
       url: window.location.href,
@@ -146,7 +151,7 @@ describe("pageTranslationManager title handling", () => {
       ...DEFAULT_CONFIG,
       translate: {
         ...DEFAULT_CONFIG.translate,
-        providerId: "openai-default",
+        providerId: "cli-proxy-api-default",
         enableAIContentAware: true,
       },
     })

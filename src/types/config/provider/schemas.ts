@@ -74,6 +74,16 @@ const topLevelReasoningConfigSchema = {
 
 const llmProviderConfigSchemaList = [
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
+    provider: z.literal("cli-proxy-api"),
+    model: createProviderModelSchema("cli-proxy-api"),
+    ...topLevelReasoningConfigSchema,
+  }),
+  baseOpenAICompatibleLLMProviderConfigSchema.extend({
+    provider: z.literal("grok2api"),
+    model: createProviderModelSchema("grok2api"),
+    ...topLevelReasoningConfigSchema,
+  }),
+  baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("atlascloud"),
     model: createProviderModelSchema("atlascloud"),
   }),

@@ -38,6 +38,7 @@ import {
 import { compactObject } from "@/types/utils"
 import { getLLMProvidersConfig, getProviderConfigById } from "../config/helpers"
 import { CONFIG_STORAGE_KEY } from "../constants/config"
+import { getProviderConnectionURL } from "./connection-url"
 import { getProviderHeadersWithOverride } from "./headers"
 import { resolveModelId } from "./model-id"
 
@@ -108,7 +109,7 @@ async function getLanguageModelById(providerId: string) {
     .when(isOpenAICompatibleLLMProviderConfig, (matchedConfig) =>
       createOpenAICompatible({
         name: matchedConfig.provider,
-        baseURL: matchedConfig.baseURL,
+        baseURL: getProviderConnectionURL(matchedConfig),
         supportsStructuredOutputs: true,
         ...(matchedConfig.apiKey && { apiKey: matchedConfig.apiKey }),
         ...(headers && { headers }),
