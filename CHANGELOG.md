@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.46.1
+
+### Patch Changes
+
+- [`393abae`](https://github.com/NakanoSanku/read-frog/commit/393abae29b510becbbcc7390f8d6d75d7aef8bda) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - fix(selection): restore the selection toolbar in content scripts
+
 ## 1.46.0
 
 ### Minor Changes
