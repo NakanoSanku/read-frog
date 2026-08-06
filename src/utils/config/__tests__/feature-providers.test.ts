@@ -2,8 +2,11 @@ import type { ProviderConfig } from "@/types/config/provider"
 import { describe, expect, it } from "vitest"
 import { DEFAULT_CONFIG } from "@/utils/constants/config"
 import { buildFeatureProviderPatch } from "@/utils/constants/feature-providers"
-import { DEFAULT_PROVIDER_CONFIG } from "@/utils/constants/providers"
-import { getSelectableProvidersForCapability } from "@/utils/providers/provider-registry"
+import { isProviderSelectorItem } from "@/utils/providers/provider-display"
+import {
+  BUILT_IN_AI_PROVIDER_LOGO,
+  getSelectableProvidersForCapability,
+} from "@/utils/providers/provider-registry"
 import {
   computeLanguageDetectionFallbackAfterDeletion,
   computeProviderFallbacksAfterDeletion,
@@ -54,10 +57,23 @@ describe("feature providers", () => {
   })
 
   describe("getSelectableProvidersForCapability", () => {
-    it("does not expose the legacy system provider in selectors", () => {
+    it("marks registry-backed system providers for selector grouping", () => {
       const providers = getSelectableProvidersForCapability("selectionToolbar.customAction", [])
 
-      expect(providers).toEqual([])
+      expect(providers).toEqual([
+        expect.objectContaining({
+          kind: "system",
+          id: "read-frog-free-ai",
+          logo: expect.any(Function),
+        }),
+      ])
+
+      const builtInAiProvider = providers[0]
+      expect(builtInAiProvider && isProviderSelectorItem(builtInAiProvider)).toBe(true)
+      if (!builtInAiProvider || !isProviderSelectorItem(builtInAiProvider)) {
+        throw new Error("Built-in AI provider selector item was not returned")
+      }
+      expect(builtInAiProvider.logo("light")).toBe(BUILT_IN_AI_PROVIDER_LOGO)
     })
   })
 
@@ -87,8 +103,8 @@ describe("feature providers", () => {
       }
 
       const remainingProviders = [
-        getProviderById("cli-proxy-api-default"),
-        getProviderById("grok2api-default"),
+        getProviderById("microsoft-translate-default"),
+        getProviderById("openai-default"),
       ]
 
       const fallbacks = computeProviderFallbacksAfterDeletion(
@@ -98,10 +114,10 @@ describe("feature providers", () => {
       )
 
       expect(fallbacks).toEqual({
-        translate: "cli-proxy-api-default",
-        videoSubtitles: "cli-proxy-api-default",
-        "selectionToolbar.translate": "cli-proxy-api-default",
-        inputTranslation: "cli-proxy-api-default",
+        translate: "microsoft-translate-default",
+        videoSubtitles: "microsoft-translate-default",
+        "selectionToolbar.translate": "microsoft-translate-default",
+        inputTranslation: "microsoft-translate-default",
       })
     })
 
@@ -136,7 +152,7 @@ describe("feature providers", () => {
 
       const remainingProviders = [
         {
-          ...getProviderById("cli-proxy-api-default"),
+          ...getProviderById("openai-default"),
           enabled: false,
         },
       ]
@@ -176,7 +192,7 @@ describe("feature providers", () => {
     })
 
     it("returns null when all features have at least one compatible provider", () => {
-      const remainingProviders = [getProviderById("cli-proxy-api-default")]
+      const remainingProviders = [getProviderById("microsoft-translate-default")]
 
       expect(findFeatureMissingProvider(remainingProviders)).toBeNull()
     })
@@ -184,7 +200,7 @@ describe("feature providers", () => {
     it("treats disabled providers as unavailable", () => {
       const remainingProviders = [
         {
-          ...getProviderById("cli-proxy-api-default"),
+          ...getProviderById("openai-default"),
           enabled: false,
         },
       ]
@@ -200,7 +216,7 @@ describe("feature providers", () => {
           providerId: "deleted-provider",
         },
       }
-      const remainingProviders: ProviderConfig[] = [DEFAULT_PROVIDER_CONFIG["microsoft-translate"]]
+      const remainingProviders = [getProviderById("microsoft-translate-default")]
 
       expect(findFeatureMissingProvider(remainingProviders, config)).toBe("languageDetection")
     })
@@ -224,10 +240,10 @@ describe("feature providers", () => {
       const result = computeSelectionToolbarCustomActionFallbacksAfterDeletion(
         "deleted-provider",
         config,
-        [getProviderById("grok2api-default")],
+        [getProviderById("deepseek-default")],
       )
 
-      expect(result?.builtInActions.dictionary.providerId).toBe("grok2api-default")
+      expect(result?.builtInActions.dictionary.providerId).toBe("deepseek-default")
       expect(result?.customActions).toEqual([])
     })
 
@@ -261,10 +277,10 @@ describe("feature providers", () => {
 
       const remainingProviders = [
         {
-          ...getProviderById("cli-proxy-api-default"),
+          ...getProviderById("openai-default"),
           enabled: false,
         },
-        getProviderById("grok2api-default"),
+        getProviderById("deepseek-default"),
       ]
 
       const result = computeSelectionToolbarCustomActionFallbacksAfterDeletion(
@@ -276,12 +292,12 @@ describe("feature providers", () => {
       expect(result?.customActions).toEqual([
         expect.objectContaining({
           id: "action-a",
-          providerId: "grok2api-default",
+          providerId: "deepseek-default",
         }),
       ])
     })
 
-    it("does not fall back to the legacy built-in AI provider", () => {
+    it("falls back to built-in AI when no enabled llm provider is available", () => {
       const config = {
         ...DEFAULT_CONFIG,
         selectionToolbar: {
@@ -311,7 +327,7 @@ describe("feature providers", () => {
 
       const remainingProviders = [
         {
-          ...getProviderById("cli-proxy-api-default"),
+          ...getProviderById("openai-default"),
           enabled: false,
         },
       ]
@@ -322,7 +338,12 @@ describe("feature providers", () => {
         remainingProviders,
       )
 
-      expect(result).toBeNull()
+      expect(result?.customActions).toEqual([
+        expect.objectContaining({
+          id: "action-a",
+          providerId: "read-frog-free-ai",
+        }),
+      ])
     })
   })
 
@@ -336,7 +357,7 @@ describe("feature providers", () => {
 
       expect(result).toEqual({
         mode: "llm",
-        providerId: "cli-proxy-api-default",
+        providerId: "openai-default",
       })
     })
 
@@ -344,7 +365,7 @@ describe("feature providers", () => {
       const result = resolveLanguageDetectionConfigForModeChange(
         {
           mode: "basic",
-          providerId: "grok2api-default",
+          providerId: "deepseek-default",
         },
         "llm",
         DEFAULT_CONFIG.providersConfig,
@@ -352,7 +373,7 @@ describe("feature providers", () => {
 
       expect(result).toEqual({
         mode: "llm",
-        providerId: "grok2api-default",
+        providerId: "deepseek-default",
       })
     })
 
@@ -362,11 +383,11 @@ describe("feature providers", () => {
         "llm",
         [
           {
-            ...getProviderById("cli-proxy-api-default"),
+            ...getProviderById("openai-default"),
             enabled: false,
           },
           {
-            ...getProviderById("grok2api-default"),
+            ...getProviderById("deepseek-default"),
             enabled: false,
           },
         ],
@@ -388,13 +409,13 @@ describe("feature providers", () => {
 
       const result = computeLanguageDetectionFallbackAfterDeletion("deleted-provider", config, [
         {
-          ...getProviderById("cli-proxy-api-default"),
+          ...getProviderById("openai-default"),
           enabled: false,
         },
-        getProviderById("grok2api-default"),
+        getProviderById("deepseek-default"),
       ])
 
-      expect(result).toBe("grok2api-default")
+      expect(result).toBe("deepseek-default")
     })
   })
 })

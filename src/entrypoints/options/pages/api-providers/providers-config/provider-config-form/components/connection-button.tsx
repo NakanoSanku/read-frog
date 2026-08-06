@@ -184,8 +184,6 @@ export function ConnectionTestButton({ providerConfig }: { providerConfig: APIPr
     feedback.providerSpecificSettings === providerSpecificSettings
       ? feedback.status
       : null
-  const apiKeyIsOptional =
-    provider === "cli-proxy-api" || provider === "deeplx" || provider === "ollama"
 
   return (
     <Button
@@ -193,7 +191,7 @@ export function ConnectionTestButton({ providerConfig }: { providerConfig: APIPr
       variant="outline"
       className="gap-2"
       onClick={handleTestConnection}
-      disabled={mutation.isPending || (!apiKey && !apiKeyIsOptional)}
+      disabled={mutation.isPending || (!apiKey && provider !== "deeplx" && provider !== "ollama")}
     >
       {mutation.isPending ? (
         <>

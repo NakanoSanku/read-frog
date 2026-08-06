@@ -43,7 +43,7 @@ describe("dEFAULT_CONFIG", () => {
     expect(DEFAULT_CONFIG.selectionToolbar.customActions).toEqual([])
   })
 
-  it("seeds only the two gateway providers in the default config", async () => {
+  it("seeds default translation providers and the default LLM providers in the default providers config", async () => {
     const { DEFAULT_CONFIG } = await import("../config")
     const { configSchema } = await import("@/types/config/config")
 
@@ -54,23 +54,40 @@ describe("dEFAULT_CONFIG", () => {
 
     expect(parseResult.success).toBe(true)
     expect(DEFAULT_CONFIG.providersConfig.map((provider) => provider.id)).toEqual([
-      "cli-proxy-api-default",
-      "grok2api-default",
+      "microsoft-translate-default",
+      "google-translate-default",
+      "openai-default",
+      "deepseek-default",
+      "atlascloud-default",
     ])
-    expect(DEFAULT_CONFIG.translate.providerId).toBe("cli-proxy-api-default")
+    expect(DEFAULT_CONFIG.translate.providerId).toBe("microsoft-translate-default")
     expect(DEFAULT_CONFIG.selectionToolbar.features.translate.providerId).toBe(
-      "cli-proxy-api-default",
+      "microsoft-translate-default",
     )
-    expect(DEFAULT_CONFIG.inputTranslation.providerId).toBe("cli-proxy-api-default")
-    expect(DEFAULT_CONFIG.videoSubtitles.providerId).toBe("cli-proxy-api-default")
+    expect(DEFAULT_CONFIG.inputTranslation.providerId).toBe("microsoft-translate-default")
+    expect(DEFAULT_CONFIG.videoSubtitles.providerId).toBe("microsoft-translate-default")
     expect(
-      DEFAULT_CONFIG.providersConfig.map((provider) =>
-        "model" in provider ? provider.model : null,
-      ),
-    ).toEqual([
-      { model: "use-custom-model", isCustomModel: true, customModel: null },
-      { model: "use-custom-model", isCustomModel: true, customModel: null },
-    ])
+      DEFAULT_CONFIG.providersConfig.find((provider) => provider.id === "deepseek-default"),
+    ).toEqual(
+      expect.objectContaining({
+        model: {
+          model: "deepseek-v4-flash",
+          isCustomModel: false,
+          customModel: null,
+        },
+      }),
+    )
+    expect(
+      DEFAULT_CONFIG.providersConfig.find((provider) => provider.id === "atlascloud-default"),
+    ).toEqual(
+      expect.objectContaining({
+        model: {
+          model: "deepseek-ai/deepseek-v4-flash",
+          isCustomModel: false,
+          customModel: null,
+        },
+      }),
+    )
   })
 
   it("defaults fresh hover translation off", async () => {
@@ -109,7 +126,7 @@ describe("dEFAULT_CONFIG", () => {
     )
     expect(config.selectionToolbar.builtInActions.dictionary).toEqual({
       enabled: true,
-      providerId: "cli-proxy-api-default",
+      providerId: "read-frog-free-ai",
     })
     expect(config.selectionToolbar.customActions).toEqual([])
     expect(createDefaultDictionaryAction()).toEqual(

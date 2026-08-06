@@ -17,9 +17,11 @@ import tensdaqLogoColor from "@/assets/providers/tensdaq-color.svg?url&no-inline
 import { env } from "@/env"
 import {
   API_PROVIDER_TYPES,
-  AVAILABLE_API_PROVIDER_TYPES,
+  DEDICATED_LLM_PROVIDER_TYPES,
   NON_API_TRANSLATE_PROVIDERS,
   NON_API_TRANSLATE_PROVIDERS_MAP,
+  PROTOCOL_COMPATIBLE_LLM_PROVIDER_TYPES,
+  PURE_API_PROVIDER_TYPES,
   PURE_TRANSLATE_PROVIDERS,
   TRANSLATE_PROVIDER_TYPES,
   isAPIProviderConfig,
@@ -30,16 +32,6 @@ import { i18n } from "@/utils/i18n"
 import { getLobeIconsCDNUrlFn } from "../logo"
 
 export const DEFAULT_LLM_PROVIDER_MODELS: LLMProviderModels = {
-  "cli-proxy-api": {
-    model: "use-custom-model",
-    isCustomModel: true,
-    customModel: null,
-  },
-  grok2api: {
-    model: "use-custom-model",
-    isCustomModel: true,
-    customModel: null,
-  },
   openrouter: {
     model: "x-ai/grok-4-fast:free",
     isCustomModel: false,
@@ -211,16 +203,6 @@ export const PROVIDER_ITEMS: Record<
     name: "DeepL",
     website: "https://www.deepl.com/pro-api",
   },
-  "cli-proxy-api": {
-    logo: () => customProviderLogo,
-    name: "CLIProxyAPI",
-    website: "https://help.router-for.me/",
-  },
-  grok2api: {
-    logo: getLobeIconsCDNUrlFn("grok"),
-    name: "grok2api",
-    website: "https://github.com/chenyme/grok2api",
-  },
   atlascloud: {
     logo: getLobeIconsCDNUrlFn("atlascloud"),
     name: "Atlas Cloud",
@@ -384,24 +366,6 @@ export const DEFAULT_PROVIDER_CONFIG = {
     name: PROVIDER_ITEMS["microsoft-translate"].name,
     enabled: true,
     provider: "microsoft-translate",
-  },
-  "cli-proxy-api": {
-    id: "cli-proxy-api-default",
-    name: PROVIDER_ITEMS["cli-proxy-api"].name,
-    enabled: true,
-    provider: "cli-proxy-api",
-    baseURL: "http://127.0.0.1:8317/v1",
-    model: DEFAULT_LLM_PROVIDER_MODELS["cli-proxy-api"],
-    reasoning: "provider-default",
-  },
-  grok2api: {
-    id: "grok2api-default",
-    name: PROVIDER_ITEMS.grok2api.name,
-    enabled: true,
-    provider: "grok2api",
-    baseURL: "http://127.0.0.1:8000/v1",
-    model: DEFAULT_LLM_PROVIDER_MODELS.grok2api,
-    reasoning: "provider-default",
   },
   atlascloud: {
     id: "atlascloud-default",
@@ -645,12 +609,8 @@ export const DEFAULT_PROVIDER_CONFIG = {
 
 export const GOOGLE_TRANSLATE_PROVIDER_ID = DEFAULT_PROVIDER_CONFIG["google-translate"].id
 export const MICROSOFT_TRANSLATE_PROVIDER_ID = DEFAULT_PROVIDER_CONFIG["microsoft-translate"].id
-export const CLI_PROXY_API_PROVIDER_ID = DEFAULT_PROVIDER_CONFIG["cli-proxy-api"].id
-export const GROK2API_PROVIDER_ID = DEFAULT_PROVIDER_CONFIG.grok2api.id
 
 export const PROVIDER_URL_PLACEHOLDERS: Partial<Record<APIProviderTypes, string>> = {
-  "cli-proxy-api": DEFAULT_PROVIDER_CONFIG["cli-proxy-api"].baseURL,
-  grok2api: DEFAULT_PROVIDER_CONFIG.grok2api.baseURL,
   atlascloud: DEFAULT_PROVIDER_CONFIG.atlascloud.baseURL,
   siliconflow: DEFAULT_PROVIDER_CONFIG.siliconflow.baseURL,
   tensdaq: DEFAULT_PROVIDER_CONFIG.tensdaq.baseURL,
@@ -684,8 +644,11 @@ export const PROVIDER_URL_PLACEHOLDERS: Partial<Record<APIProviderTypes, string>
 }
 
 export const DEFAULT_PROVIDER_CONFIG_LIST: ProvidersConfig = [
-  DEFAULT_PROVIDER_CONFIG["cli-proxy-api"],
-  DEFAULT_PROVIDER_CONFIG.grok2api,
+  DEFAULT_PROVIDER_CONFIG["microsoft-translate"],
+  DEFAULT_PROVIDER_CONFIG["google-translate"],
+  DEFAULT_PROVIDER_CONFIG.openai,
+  DEFAULT_PROVIDER_CONFIG.deepseek,
+  DEFAULT_PROVIDER_CONFIG.atlascloud,
 ]
 
 /** Resolve a provider's default description in the active interface language. */
@@ -728,8 +691,6 @@ export const API_PROVIDER_ITEMS = pick(PROVIDER_ITEMS, API_PROVIDER_TYPES)
 const PROVIDER_NAME_I18N_KEYS = {
   "openai-compatible": "options.apiProviders.providers.name.customChatComplete",
   "open-responses": "options.apiProviders.providers.name.customResponses",
-  "cli-proxy-api": "options.apiProviders.providers.name.cliProxyApi",
-  grok2api: "options.apiProviders.providers.name.grok2api",
 } as const satisfies Record<CustomModelOnlyProviderTypes, string>
 
 export function getProviderItemName(providerType: APIProviderTypes): string {
@@ -737,13 +698,21 @@ export function getProviderItemName(providerType: APIProviderTypes): string {
     return PROVIDER_ITEMS[providerType].name
   }
 
-  return i18n.t(PROVIDER_NAME_I18N_KEYS[providerType] as never) || PROVIDER_ITEMS[providerType].name
+  return i18n.t(PROVIDER_NAME_I18N_KEYS[providerType]) || PROVIDER_ITEMS[providerType].name
 }
 
 export const PROVIDER_GROUPS = {
+  builtInProviders: {
+    types: DEDICATED_LLM_PROVIDER_TYPES,
+    tutorialSlug: "built-in-providers",
+  },
   compatibleProviders: {
-    types: AVAILABLE_API_PROVIDER_TYPES,
+    types: PROTOCOL_COMPATIBLE_LLM_PROVIDER_TYPES,
     tutorialSlug: "openai-compatible-providers",
+  },
+  pureTranslationProviders: {
+    types: PURE_API_PROVIDER_TYPES,
+    tutorialSlug: "pure-translation-providers",
   },
 } as const satisfies Record<string, { types: readonly APIProviderTypes[]; tutorialSlug: string }>
 

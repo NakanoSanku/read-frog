@@ -1,9 +1,9 @@
 import type { TestSeriesObject } from "./types"
 
 /**
- * Frozen v093 rollback fixtures. These intentionally match v092 because the
- * v092-to-v093 rollback bridge is a no-op for users who skipped v1.47.0.
- * Written out in full so later fixture edits cannot alter this snapshot.
+ * Frozen v094 rollback fixtures. The standard fixture series contains no
+ * v1.47.0 gateway discriminators, so v093-to-v094 preserves it unchanged.
+ * Dedicated migration tests cover conversion of both affected gateways.
  */
 export const testSeries: TestSeriesObject = {
   "complex-config-from-v020": {

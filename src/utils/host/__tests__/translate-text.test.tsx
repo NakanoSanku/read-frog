@@ -3,7 +3,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { DEFAULT_CONFIG } from "@/utils/constants/config"
 import { NO_TRANSLATION_SENTINEL } from "@/utils/constants/prompt"
-import { DEFAULT_PROVIDER_CONFIG } from "@/utils/constants/providers"
 import { detectLanguage } from "@/utils/content/language"
 import { executeTranslate } from "@/utils/host/translate/execute-translate"
 import {
@@ -70,11 +69,6 @@ let mockGetOrCreateWebPageContext: any
 let mockGetOrGenerateWebPageSummary: any
 let mockDetectLanguage: any
 
-const NON_LLM_CONFIG = structuredClone(DEFAULT_CONFIG)
-NON_LLM_CONFIG.providersConfig.push(structuredClone(DEFAULT_PROVIDER_CONFIG["microsoft-translate"]))
-NON_LLM_CONFIG.translate.providerId = DEFAULT_PROVIDER_CONFIG["microsoft-translate"].id
-NON_LLM_CONFIG.inputTranslation.providerId = DEFAULT_PROVIDER_CONFIG["microsoft-translate"].id
-
 describe("translate-text", () => {
   beforeEach(async () => {
     vi.clearAllMocks()
@@ -115,8 +109,8 @@ describe("translate-text", () => {
     )
     mockGetOrGenerateWebPageSummary.mockResolvedValue("Generated summary")
 
-    // Most cases exercise the non-LLM translation path explicitly.
-    mockGetConfigFromStorage.mockResolvedValue(NON_LLM_CONFIG)
+    // Mock getConfigFromStorage to return DEFAULT_CONFIG
+    mockGetConfigFromStorage.mockResolvedValue(DEFAULT_CONFIG)
 
     // Mock getTranslatePrompt to return a simple prompt pair
     mockGetTranslatePrompt.mockResolvedValue({
@@ -331,7 +325,7 @@ describe("translate-text", () => {
         ...DEFAULT_CONFIG,
         translate: {
           ...DEFAULT_CONFIG.translate,
-          providerId: "cli-proxy-api-default",
+          providerId: "openai-default",
           enableAIContentAware: false,
         },
       }
@@ -365,7 +359,7 @@ describe("translate-text", () => {
         ...DEFAULT_CONFIG,
         translate: {
           ...DEFAULT_CONFIG.translate,
-          providerId: "cli-proxy-api-default",
+          providerId: "openai-default",
           enableAIContentAware: true,
         },
       }
@@ -399,7 +393,7 @@ describe("translate-text", () => {
         ...DEFAULT_CONFIG,
         translate: {
           ...DEFAULT_CONFIG.translate,
-          providerId: "cli-proxy-api-default",
+          providerId: "openai-default",
           enableAIContentAware: false,
         },
       }
@@ -455,7 +449,7 @@ describe("translate-text", () => {
         },
         inputTranslation: {
           ...DEFAULT_CONFIG.inputTranslation,
-          providerId: "cli-proxy-api-default",
+          providerId: "openai-default",
         },
       }
 

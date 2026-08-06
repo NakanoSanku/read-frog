@@ -5,6 +5,7 @@ import { fireEvent, render, screen } from "@testing-library/react"
 import { MemoryRouter } from "react-router"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { ProvidersConfig } from "@/entrypoints/options/pages/api-providers/providers-config"
+import { BUILT_IN_AI_PROVIDER_ID } from "@/utils/providers/provider-registry"
 
 const {
   anchoredToastAddMock,
@@ -30,9 +31,7 @@ const providerConfig = {
   enabled: true,
   id: "provider-1",
   name: "Long Provider Name",
-  provider: "cli-proxy-api",
-  baseURL: "http://127.0.0.1:8317/v1",
-  model: { model: "use-custom-model", isCustomModel: true, customModel: null },
+  provider: "openai",
 }
 
 const config = {
@@ -192,8 +191,21 @@ describe("ProvidersConfig", () => {
     })
   })
 
+  it("renders the built-in provider composition without CRUD actions", () => {
+    testState.selectedProviderId = BUILT_IN_AI_PROVIDER_ID
+
+    renderProvidersConfig()
+
+    expect(
+      screen.getByText("options.apiProviders.providers.attribution.builtInAi"),
+    ).toBeInTheDocument()
+    expect(screen.getByText("options.apiProviders.sponsorCta")).toBeInTheDocument()
+    expect(screen.queryByText("options.apiProviders.form.duplicate")).not.toBeInTheDocument()
+    expect(screen.queryByText("options.apiProviders.form.delete")).not.toBeInTheDocument()
+  })
+
   it("opens the provider a ?provider= deep link names", () => {
-    testState.selectedProviderId = "another-provider"
+    testState.selectedProviderId = BUILT_IN_AI_PROVIDER_ID
 
     renderProvidersConfig(`/api-providers?provider=${providerConfig.id}`)
 
@@ -201,10 +213,10 @@ describe("ProvidersConfig", () => {
   })
 
   it("keeps the current selection when the deep link names an unknown provider", () => {
-    testState.selectedProviderId = providerConfig.id
+    testState.selectedProviderId = BUILT_IN_AI_PROVIDER_ID
 
     renderProvidersConfig("/api-providers?provider=deleted-provider")
 
-    expect(testState.selectedProviderId).toBe(providerConfig.id)
+    expect(testState.selectedProviderId).toBe(BUILT_IN_AI_PROVIDER_ID)
   })
 })

@@ -126,7 +126,7 @@ options:
   apiProviders:
     title: Nhà cung cấp API
     pageDescription: Kết nối các dịch vụ AI mà Read Frog sử dụng và chọn dịch vụ cho từng tính năng.
-    description: Kết nối Read Frog với CLIProxyAPI hoặc grok2api. Mô hình được tải trực tiếp từ từng cổng kết nối.
+    description: Thêm các nhà cung cấp mà Read Frog có thể gọi. Hơn 20 nhà cung cấp được tích hợp sẵn; bạn cũng có thể thêm API tùy chỉnh tương thích Chat Completions và API Open Responses.
     configTitle: Cấu hình nhà cung cấp
     addProvider: Thêm nhà cung cấp
     builtInProvider: Nhà cung cấp tích hợp
@@ -143,8 +143,8 @@ options:
           title: Nhà cung cấp LLM tích hợp sẵn
           description: Các nhà cung cấp mô hình ngôn ngữ lớn tích hợp sẵn, không cần điền hầu hết các cấu hình như Base URL
         compatibleProviders:
-          title: Nhà cung cấp cổng kết nối
-          description: Dùng CLIProxyAPI làm cổng đa nhà cung cấp hoặc grok2api để truy cập Grok.
+          title: Nhà cung cấp API tương thích
+          description: Dùng Tùy chỉnh Chat Complete cho API tương thích Chat Completions hoặc Tùy chỉnh Responses cho API Open Responses.
         pureTranslationProviders:
           title: Nhà cung cấp dịch thuật thuần túy
           description: Các nhà cung cấp tập trung vào tính năng dịch thuật mà không có khả năng mô hình ngôn ngữ lớn
@@ -211,8 +211,6 @@ options:
         builtInAi: AI tích hợp
         customChatComplete: Tùy chỉnh Chat Complete
         customResponses: Tùy chỉnh Responses
-        cliProxyApi: CLIProxyAPI
-        grok2api: grok2api
       attribution:
         builtInAi: Được cung cấp bởi Atlas Cloud. Hiện chỉ khả dụng cho Hành động AI tùy chỉnh. Để mở khóa trải nghiệm không giới hạn, bạn có thể mua tín dụng có chi phí rất hiệu quả trên trang web chính thức.
       description:
@@ -229,8 +227,6 @@ options:
         tensdaq: Nền tảng MaaS đấu giá AI cách mạng với giá thị trường, loại bỏ giá cố định cao
         openaiCompatible: Kết nối với endpoint tùy chỉnh tương thích với OpenAI Chat Completions API
         openResponses: Kết nối với endpoint tùy chỉnh tương thích với Open Responses API
-        cliProxyApi: Kết nối cổng CLIProxyAPI và tải động các mô hình khả dụng
-        grok2api: Kết nối cổng grok2api và tải động các mô hình Grok khả dụng
         deeplx: API DeepL không chính thức
         deepl: API DeepL chính thức
         bedrock: Dịch vụ được quản lý bởi AWS cho các mô hình nền tảng cấp doanh nghiệp

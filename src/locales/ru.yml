@@ -126,7 +126,7 @@ options:
   apiProviders:
     title: API-провайдеры
     pageDescription: Подключите ИИ-сервисы, которые вызывает Read Frog, и выберите провайдера для каждой функции.
-    description: Подключите Read Frog к CLIProxyAPI или grok2api. Модели загружаются напрямую из каждого шлюза.
+    description: Добавьте провайдеров, которых может вызывать Read Frog. Более 20 встроено; также можно добавить пользовательские API, совместимые с Chat Completions, и API Open Responses.
     configTitle: Настройка провайдеров
     addProvider: Добавить провайдера
     builtInProvider: Встроенный провайдер
@@ -143,8 +143,8 @@ options:
           title: Встроенные LLM-провайдеры
           description: Встроенные провайдеры больших языковых моделей, не требуют заполнения большинства настроек, таких как Base URL
         compatibleProviders:
-          title: Провайдеры-шлюзы
-          description: Используйте CLIProxyAPI как универсальный шлюз к провайдерам или grok2api для доступа к Grok.
+          title: Совместимые API-провайдеры
+          description: Для API, совместимых с Chat Completions, используйте Пользовательский Chat Complete, а для API Open Responses — Пользовательский Responses.
         pureTranslationProviders:
           title: Чистые провайдеры перевода
           description: Провайдеры, ориентированные на функции перевода без возможностей больших языковых моделей
@@ -211,8 +211,6 @@ options:
         builtInAi: Встроенный ИИ
         customChatComplete: Пользовательский Chat Complete
         customResponses: Пользовательский Responses
-        cliProxyApi: CLIProxyAPI
-        grok2api: grok2api
       attribution:
         builtInAi: Предоставлено Atlas Cloud. Сейчас доступно только для пользовательских AI-действий. Чтобы открыть неограниченный опыт, купите выгодные кредиты на официальном сайте.
       description:
@@ -229,8 +227,6 @@ options:
         tensdaq: Революционная MaaS-платформа с рыночным ценообразованием, устраняющая высокие фиксированные цены
         openaiCompatible: Подключение к пользовательской конечной точке, совместимой с OpenAI Chat Completions API
         openResponses: Подключение к пользовательской конечной точке, совместимой с Open Responses API
-        cliProxyApi: Подключение к шлюзу CLIProxyAPI с динамической загрузкой доступных моделей
-        grok2api: Подключение к шлюзу grok2api с динамической загрузкой доступных моделей Grok
         deeplx: Неофициальный DeepL API
         deepl: Официальный DeepL API
         bedrock: Управляемый AWS сервис для корпоративных базовых моделей

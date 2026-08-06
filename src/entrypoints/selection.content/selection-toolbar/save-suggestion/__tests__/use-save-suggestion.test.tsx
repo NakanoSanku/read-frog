@@ -42,7 +42,7 @@ function wrapper(store: ReturnType<typeof createStore>) {
 
 const LLM_PROVIDER_CONFIG = DEFAULT_CONFIG.providersConfig.find(
   (providerConfig): providerConfig is LLMProviderConfig =>
-    isLLMProviderConfig(providerConfig) && providerConfig.provider === "cli-proxy-api",
+    isLLMProviderConfig(providerConfig) && providerConfig.provider === "openai",
 )!
 
 const VALID_ENVELOPE = {
@@ -134,7 +134,7 @@ describe("useSaveSuggestion", () => {
       expect.anything(),
     )
     expect(result.current.suggestion?.analyticsProvider).toEqual({
-      provider: "cli-proxy-api",
+      provider: "openai",
       backend_kind: "llm",
     })
     expect(recordSuccessMock).toHaveBeenCalledTimes(1)

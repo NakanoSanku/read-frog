@@ -126,7 +126,7 @@ options:
   apiProviders:
     title: APIプロバイダー
     pageDescription: Read Frog が呼び出す AI サービスを接続し、各機能で使うものを選びます。
-    description: Read Frog を CLIProxyAPI または grok2api に接続します。モデルは各ゲートウェイから直接取得します。
+    description: Read Frog が呼び出せるプロバイダーを追加します。20 以上を内蔵し、Chat Completions 互換 API と Open Responses API をカスタム追加できます。
     configTitle: プロバイダー設定
     addProvider: プロバイダーを追加
     builtInProvider: 組み込みプロバイダー
@@ -143,8 +143,8 @@ options:
           title: 組み込みLLMプロバイダー
           description: 組み込みの大規模言語モデルプロバイダー、Base URLなどの設定が不要
         compatibleProviders:
-          title: ゲートウェイプロバイダー
-          description: 汎用マルチプロバイダーゲートウェイには CLIProxyAPI、Grok へのアクセスには grok2api を使用します。
+          title: 互換 API プロバイダー
+          description: Chat Completions 互換 API にはカスタム Chat Complete、Open Responses API にはカスタム Responses を使用します。
         pureTranslationProviders:
           title: 純粋翻訳プロバイダー
           description: 大規模言語モデル機能を持たない翻訳専門のプロバイダー
@@ -211,8 +211,6 @@ options:
         builtInAi: 組み込み AI
         customChatComplete: カスタム Chat Complete
         customResponses: カスタム Responses
-        cliProxyApi: CLIProxyAPI
-        grok2api: grok2api
       attribution:
         builtInAi: Atlas Cloud 提供。現在はカスタム AI アクションでのみ利用できます。無制限の体験を利用するには、公式サイトで高コスパのクレジットを購入してください。
       description:
@@ -229,8 +227,6 @@ options:
         tensdaq: 革命的入札型AI MaaSプラットフォーム、市場の需給で価格が決まり高コスト固定料金を排除
         openaiCompatible: OpenAI Chat Completions API 互換のカスタムエンドポイントに接続
         openResponses: Open Responses API 互換のカスタムエンドポイントに接続
-        cliProxyApi: CLIProxyAPI ゲートウェイに接続し、利用可能なモデルを動的に取得します
-        grok2api: grok2api ゲートウェイに接続し、利用可能な Grok モデルを動的に取得します
         deeplx: 非公式 DeepL API
         deepl: 公式 DeepL API
         bedrock: エンタープライズグレードの基盤モデル向けAWSマネージドサービス

@@ -18,25 +18,20 @@ describe("provider model schema", () => {
     expect(result.success).toBe(true)
   })
 
-  it.each(["openai-compatible", "open-responses", "cli-proxy-api", "grok2api"] as const)(
-    "requires custom model mode for %s",
-    (provider) => {
-      const result = apiProviderConfigItemSchema.safeParse({
-        id: `${provider}-test`,
-        name: provider,
-        enabled: true,
-        provider,
-        ...(provider === "open-responses"
-          ? { url: "https://example.com/v1/responses" }
-          : { baseURL: "https://example.com/v1" }),
-        model: {
-          model: "future-model-from-api",
-          isCustomModel: false,
-          customModel: null,
-        },
-      })
+  it("still requires custom model mode for custom protocol providers", () => {
+    const result = apiProviderConfigItemSchema.safeParse({
+      id: "custom-test",
+      name: "Custom",
+      enabled: true,
+      provider: "openai-compatible",
+      baseURL: "https://example.com/v1",
+      model: {
+        model: "future-model-from-api",
+        isCustomModel: false,
+        customModel: null,
+      },
+    })
 
-      expect(result.success).toBe(false)
-    },
-  )
+    expect(result.success).toBe(false)
+  })
 })

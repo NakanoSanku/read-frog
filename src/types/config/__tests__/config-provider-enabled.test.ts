@@ -14,7 +14,7 @@ function getIssuePaths(input: unknown) {
 describe("config provider enabled validation", () => {
   it("fails when a built-in feature uses a disabled provider", () => {
     const providersConfig = DEFAULT_CONFIG.providersConfig.map((provider) => {
-      if (provider.id === "cli-proxy-api-default") {
+      if (provider.id === "microsoft-translate-default") {
         return { ...provider, enabled: false }
       }
       return provider
@@ -34,7 +34,7 @@ describe("config provider enabled validation", () => {
       throw new Error("Dictionary definition missing")
     }
     const providersConfig = DEFAULT_CONFIG.providersConfig.map((provider) => {
-      if (provider.id === "cli-proxy-api-default") {
+      if (provider.id === "openai-default") {
         return { ...provider, enabled: false }
       }
       return provider
@@ -45,7 +45,7 @@ describe("config provider enabled validation", () => {
       providersConfig,
       selectionToolbar: {
         ...DEFAULT_CONFIG.selectionToolbar,
-        customActions: [{ ...action, id: "custom-action", providerId: "cli-proxy-api-default" }],
+        customActions: [{ ...action, id: "custom-action", providerId: "openai-default" }],
       },
     })
 
@@ -54,7 +54,7 @@ describe("config provider enabled validation", () => {
 
   it("fails when the built-in Dictionary uses a disabled provider", () => {
     const providersConfig = DEFAULT_CONFIG.providersConfig.map((provider) =>
-      provider.id === "cli-proxy-api-default" ? { ...provider, enabled: false } : provider,
+      provider.id === "openai-default" ? { ...provider, enabled: false } : provider,
     )
     const issuePaths = getIssuePaths({
       ...DEFAULT_CONFIG,
@@ -64,7 +64,7 @@ describe("config provider enabled validation", () => {
         builtInActions: {
           dictionary: {
             ...DEFAULT_CONFIG.selectionToolbar.builtInActions.dictionary,
-            providerId: "cli-proxy-api-default",
+            providerId: "openai-default",
           },
         },
       },

@@ -11,6 +11,7 @@ import { DEFAULT_CONFIG } from "@/utils/constants/config"
 import { BUILT_IN_DICTIONARY_ACTION_ID } from "@/utils/constants/custom-action"
 import { getBuiltInDictionaryAction } from "@/utils/custom-actions"
 import {
+  BuiltInProviderEditor,
   CustomProviderEditor,
   ProviderEditor,
   useProviderForm,
@@ -97,6 +98,20 @@ describe("editor compound component contexts", () => {
     ).toThrow("ActionEditor.delete is unavailable in this composition")
   })
 
+  it("fails fast when Duplicate is composed for the built-in provider", () => {
+    const store = createConfigStore()
+
+    expect(() =>
+      render(
+        <Provider store={store}>
+          <BuiltInProviderEditor.Provider>
+            <ProviderEditor.DuplicateButton />
+          </BuiltInProviderEditor.Provider>
+        </Provider>,
+      ),
+    ).toThrow("ProviderEditor.duplicate is unavailable in this composition")
+  })
+
   it("resets Save Suggestions to Dictionary when deleting its selected custom action", async () => {
     const store = createConfigStore()
     const config = structuredClone(store.get(configAtom))
@@ -143,10 +158,10 @@ describe("editor compound component contexts", () => {
     const store = createConfigStore()
     const config = structuredClone(store.get(configAtom))
     const providerConfig = config.providersConfig.find(
-      (provider) => provider.id === "cli-proxy-api-default",
+      (provider) => provider.id === "openai-default",
     )
     if (!providerConfig || !isAPIProviderConfig(providerConfig)) {
-      throw new Error("Expected the default CLIProxyAPI provider")
+      throw new Error("Expected the default OpenAI provider")
     }
     config.providersConfig = config.providersConfig.map((provider) =>
       provider.id === providerConfig.id ? { ...provider, enabled: false } : provider,

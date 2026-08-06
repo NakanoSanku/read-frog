@@ -2,7 +2,10 @@ import type { GeneratedI18nStructure } from "#i18n"
 import type { ProviderConfig, ProvidersConfig } from "@/types/config/provider"
 import type { Theme } from "@/types/config/theme"
 import type { FeatureKey } from "@/utils/constants/feature-providers"
-import type { ProviderSelectorOption } from "@/utils/providers/provider-display"
+import type {
+  ProviderSelectorItem,
+  ProviderSelectorOption,
+} from "@/utils/providers/provider-display"
 import readFrogLogo from "@/assets/providers/read-frog-provider.png?url&no-inline"
 import { isLLMProviderConfig, isTranslateProviderConfig } from "@/types/config/provider"
 import { BUILT_IN_AI_PROVIDER_ID } from "@/utils/constants/provider-ids"
@@ -80,6 +83,15 @@ function getSystemProviderName(def: SystemProviderDef): string {
   return i18n.t(def.nameKey as never) || def.fallbackName
 }
 
+function createSystemProviderSelectorItem(def: SystemProviderDef): ProviderSelectorItem {
+  return {
+    kind: "system",
+    id: def.id,
+    name: getSystemProviderName(def),
+    logo: def.logo,
+  }
+}
+
 function createSystemProviderRef(def: SystemProviderDef): SystemProviderRef {
   return {
     kind: "system",
@@ -154,21 +166,23 @@ export function getProviderIdsForCapability(
     )
     .map((provider) => provider.id)
 
-  // System providers are retained only so pre-v093 configs can still be read
-  // during migration. New assignments must always target a configured gateway.
-  return localIds
+  return [...localIds, ...getSystemProviderIdsForCapability(capability)]
 }
 
 export function getSelectableProvidersForCapability(
   capability: ProviderCapability,
   providersConfig: ProvidersConfig,
 ): ProviderSelectorOption[] {
+  const systemProviders = Object.values(SYSTEM_PROVIDER_DEFS)
+    .filter((def) => def.capabilities.includes(capability))
+    .map(createSystemProviderSelectorItem)
+
   const localProviders = providersConfig.filter(
     (provider) =>
       provider.enabled && isLocalProviderConfigCompatibleWithCapability(capability, provider),
   )
 
-  return localProviders
+  return [...systemProviders, ...localProviders]
 }
 
 export function resolveProviderRefForCapability<C extends ProviderCapability>(

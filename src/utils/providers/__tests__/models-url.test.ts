@@ -40,36 +40,6 @@ const openResponsesConfig = {
 } satisfies ProtocolCompatibleLLMProviderConfig
 
 describe("getProviderModelsURL", () => {
-  it("loads gateway models dynamically from their OpenAI-compatible endpoints", () => {
-    const cliProxy = {
-      id: "cli-proxy-test",
-      name: "CLIProxyAPI",
-      enabled: true,
-      provider: "cli-proxy-api",
-      baseURL: "http://127.0.0.1:8317",
-      apiKey: "cli-key",
-      model: customModel,
-    } satisfies LLMProviderConfig
-    const grok2api = {
-      id: "grok2api-test",
-      name: "grok2api",
-      enabled: true,
-      provider: "grok2api",
-      baseURL: "https://grok.example.com/reverse/v1/chat/completions",
-      apiKey: "grok-key",
-      model: customModel,
-    } satisfies LLMProviderConfig
-
-    expect(getProviderModelsURL(cliProxy)).toBe("http://127.0.0.1:8317/v1/models")
-    expect(getProviderModelsRequest(cliProxy).init.headers).toMatchObject({
-      Authorization: "Bearer cli-key",
-    })
-    expect(getProviderModelsURL(grok2api)).toBe("https://grok.example.com/reverse/v1/models")
-    expect(getProviderModelsRequest(grok2api).init.headers).toMatchObject({
-      Authorization: "Bearer grok-key",
-    })
-  })
-
   it("supports OpenAI-compatible roots and full Responses endpoints", () => {
     expect(getProviderModelsURL(openAICompatibleConfig)).toBe("https://example.com/v1/models")
     expect(getProviderModelsURL(openResponsesConfig)).toBe("https://example.com/v1/models")
@@ -193,12 +163,6 @@ describe("parseProviderModelsResponse", () => {
     expect(parseProviderModelsResponse("anthropic", { data: [{ id: "claude-new" }] })).toEqual([
       "claude-new",
     ])
-    expect(
-      parseProviderModelsResponse("grok2api", {
-        object: "list",
-        data: [{ id: "grok-4" }, { id: "grok-4-fast" }],
-      }),
-    ).toEqual(["grok-4", "grok-4-fast"])
   })
 
   it("keeps only Gemini models that support content generation", () => {

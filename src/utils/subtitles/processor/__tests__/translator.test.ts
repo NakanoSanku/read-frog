@@ -31,7 +31,7 @@ describe("subtitles translator", () => {
       },
       videoSubtitles: {
         ...DEFAULT_CONFIG.videoSubtitles,
-        providerId: "cli-proxy-api-default",
+        providerId: "openai-default",
       },
     })
 
@@ -109,7 +109,7 @@ describe("subtitles translator", () => {
       expect.objectContaining({
         videoTitle: "Video title",
         subtitlesContext: "subtitle transcript",
-        providerConfig: expect.objectContaining({ id: "cli-proxy-api-default" }),
+        providerConfig: expect.objectContaining({ id: "openai-default" }),
       }),
     )
   })
@@ -133,7 +133,7 @@ describe("subtitles translator", () => {
       },
       videoSubtitles: {
         ...DEFAULT_CONFIG.videoSubtitles,
-        providerId: "cli-proxy-api-default",
+        providerId: "openai-default",
       },
     })
 
@@ -168,7 +168,7 @@ describe("subtitles translator", () => {
       },
       videoSubtitles: {
         ...DEFAULT_CONFIG.videoSubtitles,
-        providerId: "cli-proxy-api-default",
+        providerId: "openai-default",
       },
     })
     const { translateSubtitles } = await import("../translator")
@@ -202,10 +202,7 @@ describe("subtitles translator", () => {
     const configSnapshot = {
       ...DEFAULT_CONFIG,
       translate: { ...DEFAULT_CONFIG.translate, enableAIContentAware: true },
-      videoSubtitles: {
-        ...DEFAULT_CONFIG.videoSubtitles,
-        providerId: "cli-proxy-api-default",
-      },
+      videoSubtitles: { ...DEFAULT_CONFIG.videoSubtitles, providerId: "openai-default" },
     }
     const videoContext = { videoTitle: "Video title", subtitlesTextContent: "subtitle transcript" }
 

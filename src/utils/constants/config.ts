@@ -2,6 +2,7 @@ import type { Config } from "@/types/config/config"
 import type { FloatingButtonSide } from "@/types/config/floating-button"
 import type { SelectionToolbarCustomAction } from "@/types/config/selection-toolbar"
 import type { PageTranslateRange } from "@/types/config/translate"
+import { BUILT_IN_AI_PROVIDER_ID } from "@/utils/providers/provider-registry"
 import { BUILT_IN_DICTIONARY_ACTION_ID } from "./custom-action"
 import { CUSTOM_ACTION_TEMPLATES } from "./custom-action-templates"
 import {
@@ -10,8 +11,8 @@ import {
 } from "./prompt"
 import {
   buildDefaultProviderConfigList,
-  CLI_PROXY_API_PROVIDER_ID,
   DEFAULT_PROVIDER_CONFIG_LIST,
+  MICROSOFT_TRANSLATE_PROVIDER_ID,
 } from "./providers"
 import { DEFAULT_SELECTION_OVERLAY_OPACITY } from "./selection"
 import { DEFAULT_SIDE_CONTENT_WIDTH } from "./side"
@@ -47,7 +48,7 @@ export const GOOGLE_DRIVE_TOKEN_STORAGE_KEY = "__googleDriveToken"
 
 export const THEME_STORAGE_KEY = "theme"
 export const DEFAULT_DETECTED_CODE = "eng" as const
-export const CONFIG_SCHEMA_VERSION = 93
+export const CONFIG_SCHEMA_VERSION = 94
 
 export const DEFAULT_FLOATING_BUTTON_POSITION = 0.66
 export const DEFAULT_FLOATING_BUTTON_SIDE: FloatingButtonSide = "right"
@@ -61,7 +62,7 @@ export function createDefaultDictionaryAction(): SelectionToolbarCustomAction | 
   const template = CUSTOM_ACTION_TEMPLATES.find((t) => t.id === "dictionary")
   if (!template) return null
 
-  const action = template.createAction(CLI_PROXY_API_PROVIDER_ID)
+  const action = template.createAction(BUILT_IN_AI_PROVIDER_ID)
   return {
     ...action,
     id: BUILT_IN_DICTIONARY_ACTION_ID,
@@ -82,7 +83,7 @@ export const DEFAULT_CONFIG: Config = {
   },
   providersConfig: DEFAULT_PROVIDER_CONFIG_LIST,
   translate: {
-    providerId: CLI_PROXY_API_PROVIDER_ID,
+    providerId: MICROSOFT_TRANSLATE_PROVIDER_ID,
     mode: "bilingual",
     modeShortcut: DEFAULT_TRANSLATION_MODE_SHORTCUT_KEY,
     node: {
@@ -140,7 +141,7 @@ export const DEFAULT_CONFIG: Config = {
     features: {
       translate: {
         enabled: true,
-        providerId: CLI_PROXY_API_PROVIDER_ID,
+        providerId: MICROSOFT_TRANSLATE_PROVIDER_ID,
         shortcut: DEFAULT_SELECTION_TRANSLATION_SHORTCUT_KEY,
       },
       speak: {
@@ -150,7 +151,7 @@ export const DEFAULT_CONFIG: Config = {
     builtInActions: {
       dictionary: {
         enabled: true,
-        providerId: CLI_PROXY_API_PROVIDER_ID,
+        providerId: BUILT_IN_AI_PROVIDER_ID,
       },
     },
     customActions: [],
@@ -170,7 +171,7 @@ export const DEFAULT_CONFIG: Config = {
   },
   inputTranslation: {
     enabled: true,
-    providerId: CLI_PROXY_API_PROVIDER_ID,
+    providerId: MICROSOFT_TRANSLATE_PROVIDER_ID,
     fromLang: "targetCode",
     toLang: "sourceCode",
     enableCycle: false,
@@ -180,7 +181,7 @@ export const DEFAULT_CONFIG: Config = {
     enabled: true,
     autoStart: false,
     toggleShortcut: DEFAULT_SUBTITLES_TOGGLE_SHORTCUT_KEY,
-    providerId: CLI_PROXY_API_PROVIDER_ID,
+    providerId: MICROSOFT_TRANSLATE_PROVIDER_ID,
     style: {
       displayMode: DEFAULT_DISPLAY_MODE,
       translationPosition: DEFAULT_TRANSLATION_POSITION,
@@ -224,7 +225,11 @@ export const DEFAULT_CONFIG: Config = {
   uiLanguage: "auto",
 }
 
-/** Build a fresh configuration around the two gateway providers in this distribution. */
+/**
+ * Translate features start on Microsoft Translate, which is reachable everywhere; a fresh
+ * install is moved onto Google Translate afterwards where that endpoint answers — see
+ * `promoteGoogleTranslateDefaultIfReachable`.
+ */
 export function buildFreshDefaultConfig(): Config {
   return {
     ...DEFAULT_CONFIG,
@@ -234,7 +239,7 @@ export function buildFreshDefaultConfig(): Config {
       builtInActions: {
         dictionary: {
           enabled: true,
-          providerId: CLI_PROXY_API_PROVIDER_ID,
+          providerId: BUILT_IN_AI_PROVIDER_ID,
         },
       },
       customActions: [],
