@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.48.1
+
+### Patch Changes
+
+- [`8d44e1a`](https://github.com/NakanoSanku/read-frog/commit/8d44e1ad4bc16129c44c5cd6cd7c8cb1a8494c14) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - fix(vocabulary): highlight terms saved by custom dictionary actions
+
 ## 1.48.0
 
 ### Minor Changes
