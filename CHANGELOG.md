@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.48.0
+
+### Minor Changes
+
+- [`08464cc`](https://github.com/NakanoSanku/read-frog/commit/08464cc481627ed79be6c6ef17080e6ef82285e5) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - feat(vocabulary): add saved-word highlighting and quick dictionary lookup
+
 ## 1.47.1
 
 ### Patch Changes
