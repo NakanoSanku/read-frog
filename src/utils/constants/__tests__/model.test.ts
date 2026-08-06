@@ -4,7 +4,6 @@ import {
   getProviderOptionsWithOverride,
   getRecommendedProviderOptionsMatch,
 } from "../../providers/options"
-import { LLM_PROVIDER_MODELS } from "../models"
 
 describe("getProviderOptions", () => {
   describe("model pattern matching", () => {
@@ -118,68 +117,6 @@ describe("getProviderOptions", () => {
 
       const mixedCaseO4MiniOptions = getProviderOptions("O4-Mini", "openai")
       expect(mixedCaseO4MiniOptions.openai?.reasoningEffort).toBe("minimal")
-    })
-
-    it("should expose the supported OpenAI GPT-5.5 and GPT-5.4 model ids", () => {
-      expect(LLM_PROVIDER_MODELS.openai).toEqual(
-        expect.arrayContaining([
-          "gpt-5.5",
-          "gpt-5.4-pro",
-          "gpt-5.4",
-          "gpt-5.4-mini",
-          "gpt-5.4-nano",
-          "gpt-5.3-chat-latest",
-        ]),
-      )
-    })
-
-    it("should expose Azure shortcut deployment names for GPT, DeepSeek, and Grok", () => {
-      expect(LLM_PROVIDER_MODELS.azure).toEqual(
-        expect.arrayContaining([
-          "gpt-5.4-mini",
-          "gpt-5.4",
-          "DeepSeek-V4-Flash",
-          "DeepSeek-V4-Pro",
-          "grok-4.3",
-          "grok-4-20-non-reasoning",
-          "grok-4-20-reasoning",
-        ]),
-      )
-    })
-
-    it("should expose the current xAI Grok chat model ids", () => {
-      expect(LLM_PROVIDER_MODELS.xai).toEqual([
-        "grok-4.20-0309-non-reasoning",
-        "grok-4.20-0309-reasoning",
-        "grok-4.3",
-      ])
-    })
-
-    it("should expose current Ollama recommended model ids", () => {
-      expect(LLM_PROVIDER_MODELS.ollama).toEqual([
-        "gemma4:e2b",
-        "gemma4:e4b",
-        "gemma3:4b",
-        "llama3.2:3b",
-      ])
-    })
-
-    it("should expose the supported Anthropic Fable model ids", () => {
-      expect(LLM_PROVIDER_MODELS.anthropic).toContain("claude-fable-5")
-      expect(LLM_PROVIDER_MODELS.bedrock).toContain("us.anthropic.claude-fable-5")
-    })
-
-    it("should expose the live Cohere Command model ids and none of the retired ones", () => {
-      expect(LLM_PROVIDER_MODELS.cohere).toEqual([
-        "command-a-plus-05-2026",
-        "command-a-03-2025",
-        "command-a-reasoning-08-2025",
-        "command-a-vision-07-2025",
-        "command-a-translate-08-2025",
-        "command-r-plus-08-2024",
-        "command-r-08-2024",
-        "command-r7b-12-2024",
-      ])
     })
 
     it("should return the documented floor for GPT-5 model-specific reasoning", () => {
@@ -348,10 +285,6 @@ describe("getProviderOptions", () => {
     })
 
     it("should return low/default-compatible reasoning settings for gpt-oss models", () => {
-      expect(LLM_PROVIDER_MODELS.bedrock).toEqual(
-        expect.arrayContaining(["openai.gpt-oss-20b", "openai.gpt-oss-120b"]),
-      )
-
       const groqOptions = getProviderOptions("openai/gpt-oss-120b", "groq")
       expect(groqOptions.groq?.reasoningEffort).toBe("none")
 

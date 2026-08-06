@@ -32,6 +32,14 @@ vi.mock("../components/provider-options-recommendation-trigger", () => ({
   ),
 }))
 
+vi.mock("../components/model-suggestion-button", () => ({
+  ModelSuggestionButton: ({ onSelect }: { onSelect: (model: string) => void }) => (
+    <button type="button" onClick={() => onSelect("model-from-api")}>
+      select-model-from-api
+    </button>
+  ),
+}))
+
 const duplicateProviderName = "Duplicate provider"
 
 const baseProviderConfig: APIProviderConfig = {
@@ -104,6 +112,13 @@ function TranslateModelSelectorHarness({
       <output aria-label="persisted-provider-options">
         {JSON.stringify(providerConfig.providerOptions ?? null)}
       </output>
+      <output aria-label="persisted-model">
+        {"model" in providerConfig
+          ? providerConfig.model.isCustomModel
+            ? providerConfig.model.customModel
+            : providerConfig.model.model
+          : null}
+      </output>
       <output aria-label="submit-count">{String(submitCount)}</output>
     </form.AppForm>
   )
@@ -168,5 +183,36 @@ describe("translateModelSelector", () => {
       '{"reasoningEffort":"minimal"}',
     )
     expect(screen.getByLabelText("submit-count")).toHaveTextContent("1")
+  })
+
+  it("renders an editable model field and persists a model fetched from the provider", async () => {
+    const initialConfig: APIProviderConfig = {
+      ...baseProviderConfig,
+      model: {
+        model: "currently-saved-model",
+        isCustomModel: false,
+        customModel: null,
+      },
+    }
+    const { container } = render(<TranslateModelSelectorHarness initialConfig={initialConfig} />)
+
+    expect(container.querySelector('input[id="model.model"]')).toHaveValue("currently-saved-model")
+    expect(screen.queryByRole("combobox")).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole("button", { name: "select-model-from-api" }))
+    await flushUpdates()
+
+    expect(screen.getByLabelText("persisted-model")).toHaveTextContent("model-from-api")
+  })
+
+  it("preserves legacy custom-model configs while using the same provider fetch control", async () => {
+    const { container } = render(<TranslateModelSelectorHarness />)
+
+    expect(container.querySelector('input[id="model.customModel"]')).toHaveValue("gpt-5-mini")
+
+    fireEvent.click(screen.getByRole("button", { name: "select-model-from-api" }))
+    await flushUpdates()
+
+    expect(screen.getByLabelText("persisted-model")).toHaveTextContent("model-from-api")
   })
 })

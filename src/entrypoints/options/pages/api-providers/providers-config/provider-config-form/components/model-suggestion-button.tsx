@@ -1,4 +1,4 @@
-import type { ProtocolCompatibleLLMProviderConfig } from "@/types/config/provider"
+import type { LLMProviderConfig } from "@/types/config/provider"
 import { Combobox as ComboboxPrimitive } from "@base-ui/react"
 import { Icon } from "@iconify/react"
 import { useMutation } from "@tanstack/react-query"
@@ -14,16 +14,14 @@ import {
 } from "@/components/ui/base-ui/combobox"
 import { extractErrorMessage } from "@/utils/error/extract-message"
 import { i18n } from "@/utils/i18n"
-import { getProviderConnectionURL } from "@/utils/providers/connection-url"
-import { getProviderModelsURL } from "@/utils/providers/models-url"
-
-interface ModelsResponse {
-  object: string
-  data: Array<{ id: string; object: string; created: number; owned_by: string }>
-}
+import {
+  getProviderModelsRequest,
+  getProviderModelsURL,
+  parseProviderModelsResponse,
+} from "@/utils/providers/models-url"
 
 interface ModelSuggestionButtonProps {
-  providerConfig: ProtocolCompatibleLLMProviderConfig
+  providerConfig: LLMProviderConfig
   onSelect: (model: string) => void
   disabled?: boolean
 }
@@ -33,37 +31,36 @@ export function ModelSuggestionButton({
   onSelect,
   disabled,
 }: ModelSuggestionButtonProps) {
-  const { apiKey } = providerConfig
-  const connectionURL = getProviderConnectionURL(providerConfig)
+  let modelsURL: string | undefined
+  try {
+    modelsURL = getProviderModelsURL(providerConfig)
+  } catch {
+    modelsURL = undefined
+  }
+
   const mutation = useMutation({
-    mutationKey: ["fetchModels", providerConfig.provider, connectionURL],
+    mutationKey: ["fetchModels", providerConfig.provider, modelsURL],
     meta: {
       errorDescription: i18n.t("options.apiProviders.form.models.fetchError"),
     },
     mutationFn: async () => {
-      if (!apiKey) {
-        throw new Error(i18n.t("options.apiProviders.form.models.apiKeyRequired"))
-      }
-
-      const response = await fetch(getProviderModelsURL(providerConfig), {
-        headers: { Authorization: `Bearer ${apiKey}` },
-      })
+      const request = getProviderModelsRequest(providerConfig)
+      const response = await fetch(request.url, request.init)
       if (!response.ok) {
         throw new Error(await extractErrorMessage(response))
       }
 
-      const data: ModelsResponse = await response.json()
-      return data.data.map((m) => m.id)
+      return parseProviderModelsResponse(providerConfig.provider, await response.json())
     },
   })
 
   const handleFetch = () => {
-    if (!connectionURL) return
+    if (!modelsURL) return
     mutation.reset()
     mutation.mutate()
   }
 
-  const isDisabled = disabled || !connectionURL
+  const isDisabled = disabled || !modelsURL
 
   // Idle state - show fetch button
   if (mutation.isIdle) {

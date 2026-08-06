@@ -1,22 +1,6 @@
 import type { APIProviderConfig } from "@/types/config/provider"
 import { useSelector } from "@tanstack/react-store"
-import { useSetAtom } from "jotai"
-import { Checkbox } from "@/components/ui/base-ui/checkbox"
-import {
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/base-ui/select"
-import { toastManager } from "@/components/ui/base-ui/toast"
-import {
-  isCustomModelOnlyProvider,
-  isLLMProviderConfig,
-  isProtocolCompatibleLLMProviderConfig,
-  LLM_PROVIDER_MODELS,
-} from "@/types/config/provider"
-import { providerConfigAtom, updateLLMProviderConfig } from "@/utils/atoms/provider"
+import { isLLMProviderConfig } from "@/types/config/provider"
 import { i18n } from "@/utils/i18n"
 import { resolveModelId } from "@/utils/providers/model-id"
 import { ModelSuggestionButton } from "./components/model-suggestion-button"
@@ -27,7 +11,6 @@ export const TranslateModelSelector = withForm({
   ...{ defaultValues: {} as APIProviderConfig },
   render: function Render({ form }) {
     const providerConfig = useSelector(form.store, (state) => state.values)
-    const setProviderConfig = useSetAtom(providerConfigAtom(providerConfig.id))
     if (!isLLMProviderConfig(providerConfig)) return null
 
     const modelId = resolveModelId(providerConfig.model)
@@ -58,15 +41,13 @@ export const TranslateModelSelector = withForm({
                 labelExtra={
                   <div className="flex items-center gap-2">
                     {recommendationTrigger}
-                    {isProtocolCompatibleLLMProviderConfig(providerConfig) && (
-                      <ModelSuggestionButton
-                        providerConfig={providerConfig}
-                        onSelect={(selectedModel) => {
-                          field.handleChange(selectedModel)
-                          void form.handleSubmit()
-                        }}
-                      />
-                    )}
+                    <ModelSuggestionButton
+                      providerConfig={providerConfig}
+                      onSelect={(selectedModel) => {
+                        field.handleChange(selectedModel)
+                        void form.handleSubmit()
+                      }}
+                    />
                   </div>
                 }
                 value={customModel ?? ""}
@@ -76,75 +57,26 @@ export const TranslateModelSelector = withForm({
         ) : (
           <form.AppField name="model.model">
             {(field) => (
-              <field.SelectFieldAutoSave
+              <field.InputFieldAutoSave
                 formForSubmit={form}
                 label={i18n.t("options.apiProviders.form.models.label")}
-                labelExtra={recommendationTrigger}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue
-                    placeholder={i18n.t("options.apiProviders.form.models.translate.placeholder")}
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {LLM_PROVIDER_MODELS[providerConfig.provider].map((modelOption) => (
-                      <SelectItem key={modelOption} value={modelOption}>
-                        {modelOption}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </field.SelectFieldAutoSave>
+                labelExtra={
+                  <div className="flex items-center gap-2">
+                    {recommendationTrigger}
+                    <ModelSuggestionButton
+                      providerConfig={providerConfig}
+                      onSelect={(selectedModel) => {
+                        field.handleChange(selectedModel)
+                        void form.handleSubmit()
+                      }}
+                    />
+                  </div>
+                }
+                placeholder={i18n.t("options.apiProviders.form.models.translate.placeholder")}
+                value={model}
+              />
             )}
           </form.AppField>
-        )}
-        {!isCustomModelOnlyProvider(providerConfig.provider) && (
-          <form.Field name="model.isCustomModel">
-            {(field) => (
-              <div className="mt-2.5 flex items-center space-x-2">
-                <Checkbox
-                  id="isCustomModel-translate"
-                  checked={field.state.value}
-                  onCheckedChange={(checked) => {
-                    try {
-                      if (!checked) {
-                        void setProviderConfig(
-                          updateLLMProviderConfig(providerConfig, {
-                            model: {
-                              customModel: null,
-                              isCustomModel: false,
-                            },
-                          }),
-                        )
-                      } else if (checked) {
-                        void setProviderConfig(
-                          updateLLMProviderConfig(providerConfig, {
-                            model: {
-                              customModel: model,
-                              isCustomModel: true,
-                            },
-                          }),
-                        )
-                      }
-                    } catch (error) {
-                      toastManager.add({
-                        type: "error",
-                        title:
-                          error instanceof Error ? error.message : "Failed to update configuration",
-                      })
-                    }
-                  }}
-                />
-                <label
-                  htmlFor="isCustomModel-translate"
-                  className="cursor-pointer text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {i18n.t("options.apiProviders.form.models.enterCustomModel")}
-                </label>
-              </div>
-            )}
-          </form.Field>
         )}
       </div>
     )

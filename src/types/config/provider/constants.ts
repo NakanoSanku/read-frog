@@ -1,17 +1,11 @@
 import {
-  LLM_PROVIDER_MODELS,
   NON_API_TRANSLATE_PROVIDERS,
   NON_API_TRANSLATE_PROVIDERS_MAP,
   PURE_TRANSLATE_PROVIDERS,
 } from "@/utils/constants/models"
 
 // Re-export for external consumers.
-export {
-  LLM_PROVIDER_MODELS,
-  NON_API_TRANSLATE_PROVIDERS,
-  NON_API_TRANSLATE_PROVIDERS_MAP,
-  PURE_TRANSLATE_PROVIDERS,
-}
+export { NON_API_TRANSLATE_PROVIDERS, NON_API_TRANSLATE_PROVIDERS_MAP, PURE_TRANSLATE_PROVIDERS }
 
 /* ──────────────────────────────
   Derived provider names
@@ -52,9 +46,7 @@ export const TRANSLATE_PROVIDER_TYPES = [
   "alibaba",
   "moonshotai",
   "huggingface",
-] as const satisfies Readonly<
-  (keyof typeof LLM_PROVIDER_MODELS | (typeof PURE_TRANSLATE_PROVIDERS)[number])[]
->
+] as const
 export type TranslateProviderTypes = (typeof TRANSLATE_PROVIDER_TYPES)[number]
 export function isTranslateProvider(provider: string): provider is TranslateProviderTypes {
   return TRANSLATE_PROVIDER_TYPES.includes(provider)
@@ -90,7 +82,7 @@ export const LLM_PROVIDER_TYPES = [
   "alibaba",
   "moonshotai",
   "huggingface",
-] as const satisfies Readonly<(keyof typeof LLM_PROVIDER_MODELS)[]>
+] as const
 export type LLMProviderTypes = (typeof LLM_PROVIDER_TYPES)[number]
 export function isLLMProvider(provider: string): provider is LLMProviderTypes {
   return LLM_PROVIDER_TYPES.includes(provider)
@@ -213,7 +205,7 @@ export const API_PROVIDER_TYPES = [
   "alibaba",
   "moonshotai",
   "huggingface",
-] as const satisfies Readonly<(keyof typeof LLM_PROVIDER_MODELS | "deeplx" | "deepl")[]>
+] as const satisfies Readonly<(LLMProviderTypes | "deeplx" | "deepl")[]>
 export type APIProviderTypes = (typeof API_PROVIDER_TYPES)[number]
 export function isAPIProvider(provider: string): provider is APIProviderTypes {
   return API_PROVIDER_TYPES.includes(provider)

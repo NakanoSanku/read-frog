@@ -11,11 +11,7 @@ import type {
   TranslateProviderTypes,
 } from "./constants"
 import { z } from "zod"
-import {
-  AI_SDK_REASONING_VALUES,
-  LLM_PROVIDER_MODELS,
-  isCustomModelOnlyProvider,
-} from "./constants"
+import { AI_SDK_REASONING_VALUES, isCustomModelOnlyProvider } from "./constants"
 import {
   azureProviderSpecificSettingsSchema,
   bedrockProviderSpecificSettingsSchema,
@@ -31,13 +27,18 @@ export type ProviderSponsorConfig = z.infer<typeof providerSponsorConfigSchema>
   Providers config schema
   ────────────────────────────── */
 
-// Helper function to create provider-specific model schema
-function createProviderModelSchema<T extends LLMProviderTypes>(provider: T) {
-  const models = LLM_PROVIDER_MODELS[provider]
-  return z.object({
-    model: z.enum(models),
+export const llmProviderModelSchema = z.object({
+  model: z.string().trim().min(1),
+  isCustomModel: z.boolean(),
+  customModel: z.string().nullable(),
+})
+export type LLMProviderModel = z.infer<typeof llmProviderModelSchema>
+
+// Keep the legacy model shape so existing configs remain compatible, but accept
+// every model id returned by provider APIs instead of validating against a local catalog.
+function createProviderModelSchema(provider: LLMProviderTypes) {
+  return llmProviderModelSchema.extend({
     isCustomModel: isCustomModelOnlyProvider(provider) ? z.literal(true) : z.boolean(),
-    customModel: z.string().nullable(),
   })
 }
 
@@ -74,129 +75,129 @@ const topLevelReasoningConfigSchema = {
 const llmProviderConfigSchemaList = [
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("atlascloud"),
-    model: createProviderModelSchema<"atlascloud">("atlascloud"),
+    model: createProviderModelSchema("atlascloud"),
   }),
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("siliconflow"),
-    model: createProviderModelSchema<"siliconflow">("siliconflow"),
+    model: createProviderModelSchema("siliconflow"),
   }),
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("tensdaq"),
-    model: createProviderModelSchema<"tensdaq">("tensdaq"),
+    model: createProviderModelSchema("tensdaq"),
   }),
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("volcengine"),
-    model: createProviderModelSchema<"volcengine">("volcengine"),
+    model: createProviderModelSchema("volcengine"),
   }),
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("openai-compatible"),
-    model: createProviderModelSchema<"openai-compatible">("openai-compatible"),
+    model: createProviderModelSchema("openai-compatible"),
   }),
   baseOpenResponsesLLMProviderConfigSchema.extend({
     provider: z.literal("open-responses"),
-    model: createProviderModelSchema<"open-responses">("open-responses"),
+    model: createProviderModelSchema("open-responses"),
   }),
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("openrouter"),
-    model: createProviderModelSchema<"openrouter">("openrouter"),
+    model: createProviderModelSchema("openrouter"),
   }),
   baseOpenAICompatibleLLMProviderConfigSchema.extend({
     provider: z.literal("minimax"),
-    model: createProviderModelSchema<"minimax">("minimax"),
+    model: createProviderModelSchema("minimax"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("openai"),
-    model: createProviderModelSchema<"openai">("openai"),
+    model: createProviderModelSchema("openai"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("azure"),
-    model: createProviderModelSchema<"azure">("azure"),
+    model: createProviderModelSchema("azure"),
     providerSpecificSettings: azureProviderSpecificSettingsSchema.optional(),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("deepseek"),
-    model: createProviderModelSchema<"deepseek">("deepseek"),
+    model: createProviderModelSchema("deepseek"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("google"),
-    model: createProviderModelSchema<"google">("google"),
+    model: createProviderModelSchema("google"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("anthropic"),
-    model: createProviderModelSchema<"anthropic">("anthropic"),
+    model: createProviderModelSchema("anthropic"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("xai"),
-    model: createProviderModelSchema<"xai">("xai"),
+    model: createProviderModelSchema("xai"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("bedrock"),
-    model: createProviderModelSchema<"bedrock">("bedrock"),
+    model: createProviderModelSchema("bedrock"),
     providerSpecificSettings: bedrockProviderSpecificSettingsSchema,
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("groq"),
-    model: createProviderModelSchema<"groq">("groq"),
+    model: createProviderModelSchema("groq"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("deepinfra"),
-    model: createProviderModelSchema<"deepinfra">("deepinfra"),
+    model: createProviderModelSchema("deepinfra"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("mistral"),
-    model: createProviderModelSchema<"mistral">("mistral"),
+    model: createProviderModelSchema("mistral"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("togetherai"),
-    model: createProviderModelSchema<"togetherai">("togetherai"),
+    model: createProviderModelSchema("togetherai"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("cohere"),
-    model: createProviderModelSchema<"cohere">("cohere"),
+    model: createProviderModelSchema("cohere"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("fireworks"),
-    model: createProviderModelSchema<"fireworks">("fireworks"),
+    model: createProviderModelSchema("fireworks"),
     ...topLevelReasoningConfigSchema,
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("cerebras"),
-    model: createProviderModelSchema<"cerebras">("cerebras"),
+    model: createProviderModelSchema("cerebras"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("replicate"),
-    model: createProviderModelSchema<"replicate">("replicate"),
+    model: createProviderModelSchema("replicate"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("perplexity"),
-    model: createProviderModelSchema<"perplexity">("perplexity"),
+    model: createProviderModelSchema("perplexity"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("vercel"),
-    model: createProviderModelSchema<"vercel">("vercel"),
+    model: createProviderModelSchema("vercel"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("ollama"),
-    model: createProviderModelSchema<"ollama">("ollama"),
+    model: createProviderModelSchema("ollama"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("alibaba"),
-    model: createProviderModelSchema<"alibaba">("alibaba"),
+    model: createProviderModelSchema("alibaba"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("moonshotai"),
-    model: createProviderModelSchema<"moonshotai">("moonshotai"),
+    model: createProviderModelSchema("moonshotai"),
   }),
   baseAPIProviderConfigSchema.extend({
     provider: z.literal("huggingface"),
-    model: createProviderModelSchema<"huggingface">("huggingface"),
+    model: createProviderModelSchema("huggingface"),
   }),
 ] as const
 
@@ -286,51 +287,4 @@ export type TopLevelReasoningProviderConfig = Extract<
   { provider: TopLevelReasoningProviderTypes }
 >
 
-/* ──────────────────────────────
-  unified llm model config helpers
-  ────────────────────────────── */
-
-type ModelTuple = readonly [string, ...string[]] // 至少一个元素才能给 z.enum
-// oxlint-disable-next-line typescript/no-unnecessary-type-parameters -- T preserves literal model tuple inference for z.enum.
-function providerConfigSchema<T extends ModelTuple>(models: T) {
-  return z.object({
-    model: z.enum(models),
-    isCustomModel: z.boolean(),
-    customModel: z.string().nullable(),
-  })
-}
-
-type SchemaShape<M extends Record<string, ModelTuple>> = {
-  [K in keyof M]: ReturnType<typeof providerConfigSchema<M[K]>>
-}
-
-function buildProviderModelsSchema<M extends Record<string, ModelTuple>>(models: M) {
-  return z.object(
-    // Keep key names and types when building schema dynamically.
-    (Object.keys(models) as (keyof M)[]).reduce((acc, key) => {
-      acc[key] = providerConfigSchema(models[key])
-      return acc
-    }, {} as SchemaShape<M>),
-  )
-}
-
-const {
-  "openai-compatible": _openAICompatible,
-  "open-responses": _openResponses,
-  ...modelsWithSelectableDefaults
-} = LLM_PROVIDER_MODELS
-export const llmProviderModelsSchema = buildProviderModelsSchema(
-  modelsWithSelectableDefaults,
-).extend({
-  "openai-compatible": z.object({
-    model: z.enum(LLM_PROVIDER_MODELS["openai-compatible"]),
-    isCustomModel: z.literal(true),
-    customModel: z.string().nullable(),
-  }),
-  "open-responses": z.object({
-    model: z.enum(LLM_PROVIDER_MODELS["open-responses"]),
-    isCustomModel: z.literal(true),
-    customModel: z.string().nullable(),
-  }),
-})
-export type LLMProviderModels = z.infer<typeof llmProviderModelsSchema>
+export type LLMProviderModels = Record<LLMProviderTypes, LLMProviderModel>
