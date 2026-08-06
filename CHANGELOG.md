@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.46.3
+
+### Patch Changes
+
+- [`89da3df`](https://github.com/mengxi-ream/read-frog/commit/89da3df796ca753283bf642172a796761655d14c) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - fix(providers): load every model picker from the provider models API
+
 ## 1.46.2
 
 ### Patch Changes
