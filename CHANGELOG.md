@@ -1,5 +1,11 @@
 # @read-frog/extension
 
+## 1.46.2
+
+### Patch Changes
+
+- [`9dbdeca`](https://github.com/NakanoSanku/read-frog/commit/9dbdeca7f7b543251f6a941c89a6fc88ce8a3214) Thanks [@NakanoSanku](https://github.com/NakanoSanku)! - fix(tts): detect the language of short Google Translate TTS text
+
 ## 1.46.1
 
 ### Patch Changes
