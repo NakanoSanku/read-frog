@@ -1,6 +1,7 @@
 import type { SubtitleTextStyle } from "@/types/config/subtitles"
 import { useAtomValue } from "jotai"
 import { useEffect, useRef } from "react"
+import { VocabularyHighlightedText } from "@/components/vocabulary-highlighted-text"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { SUBTITLE_FONT_FAMILIES } from "@/utils/constants/subtitles"
 import { getLanguageDirectionAndLang } from "@/utils/content/language-direction"
@@ -33,7 +34,7 @@ export function MainSubtitle({ content, className }: SubtitleLineProps) {
       className={cn("subtitles-main text-xl leading-tight", className)}
       style={getTextStyles(style.main)}
     >
-      {text}
+      <VocabularyHighlightedText text={text} />
     </div>
   )
 }
@@ -93,7 +94,7 @@ export function TranslationSubtitle({ content, className }: SubtitleLineProps) {
       dir={dir}
       lang={lang}
     >
-      {text}
+      <VocabularyHighlightedText text={text} />
     </div>
   )
 }

@@ -4,6 +4,7 @@ import { Activity } from "react"
 import { configFieldsAtomMap } from "@/utils/atoms/config"
 import { SUBTITLES_VIEW_CLASS } from "@/utils/constants/subtitles"
 import { cn } from "@/utils/styles/utils"
+import { buildWordHighlightCSS } from "@/utils/vocabulary/style"
 import { displaySubtitleAtom } from "../atoms"
 import { MainSubtitle, TranslationSubtitle } from "./subtitle-lines"
 import { useVerticalDrag } from "./use-vertical-drag"
@@ -14,6 +15,7 @@ interface SubtitlesViewProps {
 
 function SubtitlesContent() {
   const subtitle = useAtomValue(displaySubtitleAtom)
+  const { wordHighlight } = useAtomValue(configFieldsAtomMap.selectionToolbar)
   const { style } = useAtomValue(configFieldsAtomMap.videoSubtitles)
   const { displayMode, translationPosition, container } = style
 
@@ -32,6 +34,7 @@ function SubtitlesContent() {
     <div
       className={`${SUBTITLES_VIEW_CLASS} pointer-events-none flex w-full flex-col items-center justify-end pb-3`}
     >
+      {wordHighlight.enabled && <style>{buildWordHighlightCSS(wordHighlight)}</style>}
       <div
         className="pointer-events-auto mx-auto flex w-fit max-w-[90%] cursor-text flex-col gap-2 rounded px-2 py-1.5 text-center text-white select-text"
         style={containerStyle}

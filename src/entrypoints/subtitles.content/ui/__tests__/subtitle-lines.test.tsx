@@ -1,14 +1,18 @@
 // @vitest-environment jsdom
 import type { LangCodeISO6393 } from "@read-frog/definitions"
-import { act, render, screen } from "@testing-library/react"
+import { act, render, screen, waitFor } from "@testing-library/react"
 import { createStore, Provider } from "jotai"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { fakeBrowser } from "wxt/testing/fake-browser"
+import { storage } from "#imports"
 import { DEFAULT_CONFIG } from "@/utils/constants/config"
+import { SAVED_VOCABULARY_STORAGE_KEY } from "@/utils/constants/vocabulary"
 import { currentSubtitleAtom, currentTimeMsAtom, sourceTrackAtom } from "../../atoms"
 import { MainSubtitle, TranslationSubtitle } from "../subtitle-lines"
 
 const mockedAtoms = vi.hoisted(() => ({
   languageAtom: null as any,
+  selectionToolbarAtom: null as any,
   videoSubtitlesAtom: null as any,
 }))
 
@@ -21,14 +25,17 @@ vi.mock("@/utils/i18n", () => ({
 vi.mock("@/utils/atoms/config", async () => {
   const { atom } = await import("jotai")
   const languageAtom = atom(DEFAULT_CONFIG.language)
+  const selectionToolbarAtom = atom(DEFAULT_CONFIG.selectionToolbar)
   const videoSubtitlesAtom = atom(DEFAULT_CONFIG.videoSubtitles)
 
   mockedAtoms.languageAtom = languageAtom
+  mockedAtoms.selectionToolbarAtom = selectionToolbarAtom
   mockedAtoms.videoSubtitlesAtom = videoSubtitlesAtom
 
   return {
     configFieldsAtomMap: {
       language: languageAtom,
+      selectionToolbar: selectionToolbarAtom,
       videoSubtitles: videoSubtitlesAtom,
     },
   }
@@ -41,10 +48,13 @@ function createStoreWithLanguage(targetCode: LangCodeISO6393) {
     targetCode,
   })
   store.set(mockedAtoms.videoSubtitlesAtom, DEFAULT_CONFIG.videoSubtitles)
+  store.set(mockedAtoms.selectionToolbarAtom, DEFAULT_CONFIG.selectionToolbar)
   return store
 }
 
 describe("subtitle lines", () => {
+  beforeEach(() => fakeBrowser.reset())
+
   it("applies rtl attributes to translation subtitle for Arabic target language", () => {
     const store = createStoreWithLanguage("arb")
 
@@ -148,5 +158,28 @@ describe("subtitle lines", () => {
 
     const line = screen.getByText("你好")
     expect(line).not.toHaveClass("animate-subtitle-fade-in")
+  })
+
+  it("highlights vocabulary saved from Dictionary inside subtitles", async () => {
+    await storage.setItem(`local:${SAVED_VOCABULARY_STORAGE_KEY}`, [
+      {
+        id: "world",
+        term: "world",
+        normalizedTerm: "world",
+        createdAt: 1,
+        updatedAt: 1,
+      },
+    ])
+    const store = createStoreWithLanguage("eng")
+
+    render(
+      <Provider store={store}>
+        <MainSubtitle content="Hello world" />
+      </Provider>,
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText("world")).toHaveClass("read-frog-word-highlight")
+    })
   })
 })

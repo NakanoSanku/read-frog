@@ -1,20 +1,26 @@
 import type { ReactNode } from "react"
 import type { SelectionSession } from "../atoms"
 import type { SelectionPopoverActions } from "@/components/ui/selection-popover"
+import type { WordHighlightLookupDetail } from "@/types/vocabulary"
 import { useAtomValue, useSetAtom } from "jotai"
 import { createContext, use, useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toastManager } from "@/components/ui/base-ui/toast"
 import { SelectionPopover } from "@/components/ui/selection-popover"
+import { useTextToSpeech } from "@/hooks/use-text-to-speech"
 import { ANALYTICS_FEATURE, ANALYTICS_SURFACE } from "@/types/analytics"
 import { createFeatureUsageContext, trackFeatureUsed } from "@/utils/analytics"
 import { classifyResolvedProvider, UNKNOWN_FEATURE_PROVIDER } from "@/utils/analytics-provider"
 import { configFieldsAtomMap, writeConfigAtom } from "@/utils/atoms/config"
+import { BUILT_IN_DICTIONARY_ACTION_ID } from "@/utils/constants/custom-action"
+import { WORD_HIGHLIGHT_LOOKUP_EVENT } from "@/utils/constants/vocabulary"
 import { findSelectionToolbarAction, patchSelectionToolbarAction } from "@/utils/custom-actions"
+import { i18n } from "@/utils/i18n"
 import { onMessage } from "@/utils/message"
 import {
   getSelectableProvidersForCapability,
   resolveProviderRefForCapability,
 } from "@/utils/providers/provider-registry"
+import { saveVocabularyEntry } from "@/utils/vocabulary/storage"
 import { shadowWrapper } from "../.."
 import { SelectionToolbarErrorAlert } from "../../components/selection-toolbar-error-alert"
 import { SelectionToolbarFooterContent } from "../../components/selection-toolbar-footer-content"
@@ -33,6 +39,7 @@ import { CustomActionToolButton } from "./custom-action-tool-button"
 import { SaveToGoogleSheetsButton } from "./save-to-google-sheets-button"
 import { isSaveToNotebaseDialogOpenAtom } from "./save-to-notebase-dialog-atom"
 import { SaveToNotebaseDialogHost } from "./save-to-notebase-dialog-host"
+import { SaveVocabularyButton } from "./save-vocabulary-button"
 import {
   buildCustomActionExecutionPlan,
   useCustomActionExecution,
@@ -83,6 +90,8 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   const selectionToolbarConfig = useAtomValue(configFieldsAtomMap.selectionToolbar)
   const providersConfig = useAtomValue(configFieldsAtomMap.providersConfig)
   const language = useAtomValue(configFieldsAtomMap.language)
+  const ttsConfig = useAtomValue(configFieldsAtomMap.tts)
+  const { play: playTextToSpeech } = useTextToSpeech(ANALYTICS_SURFACE.SELECTION_TOOLBAR)
   const setIsSelectionToolbarVisible = useSetAtom(isSelectionToolbarVisibleAtom)
   const setConfig = useSetAtom(writeConfigAtom)
   const isSaveToNotebaseDialogOpen = useAtomValue(isSaveToNotebaseDialogOpenAtom)
@@ -91,6 +100,8 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   const popoverActionsRef = useRef<SelectionPopoverActions | null>(null)
   const nextEphemeralSessionIdRef = useRef(0)
   const trackedPrecheckErrorKeyRef = useRef<string | null>(null)
+  const autoSpokenSessionRef = useRef<string | null>(null)
+  const autoSavedSessionRef = useRef<string | null>(null)
   const { resolveContextMenuOpenRequest } = useSelectionOpenRequestResolver(selectionSession)
   const selectionText = activeSession?.selectionSnapshot.text ?? null
   const cleanSelection = useMemo(() => normalizeSelectedText(selectionText), [selectionText])
@@ -212,6 +223,29 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
     [commitOpenRequest],
   )
 
+  useEffect(() => {
+    const handleWordHighlightLookup = (event: Event) => {
+      const detail = (event as CustomEvent<WordHighlightLookupDetail>).detail
+      if (!detail?.term || !detail.anchor) return
+
+      const contextText = detail.context || detail.term
+      openActionRequest({
+        actionId: BUILT_IN_DICTIONARY_ACTION_ID,
+        anchor: detail.anchor,
+        surface: ANALYTICS_SURFACE.SELECTION_TOOLBAR,
+        session: {
+          id: --nextEphemeralSessionIdRef.current,
+          createdAt: Date.now(),
+          selectionSnapshot: { text: detail.term, ranges: [] },
+          contextSnapshot: { text: contextText, paragraphs: [contextText] },
+        },
+      })
+    }
+
+    window.addEventListener(WORD_HIGHLIGHT_LOOKUP_EVENT, handleWordHighlightLookup)
+    return () => window.removeEventListener(WORD_HIGHLIGHT_LOOKUP_EVENT, handleWordHighlightLookup)
+  }, [openActionRequest])
+
   const openToolbarCustomAction = useCallback(
     (actionId: string, triggerElement: HTMLElement | null) => {
       if (!triggerElement) {
@@ -324,6 +358,77 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
   }, [openContextMenuCustomAction])
 
   useEffect(() => {
+    if (
+      !isOpen ||
+      activeActionId !== BUILT_IN_DICTIONARY_ACTION_ID ||
+      !cleanSelection ||
+      !selectionToolbarConfig.wordHighlight.enabled ||
+      !selectionToolbarConfig.wordHighlight.autoSpeak
+    ) {
+      return
+    }
+
+    const sessionKey = `${popoverSessionKey}:${activeSession?.id ?? 0}`
+    if (autoSpokenSessionRef.current === sessionKey) return
+    autoSpokenSessionRef.current = sessionKey
+    void playTextToSpeech(cleanSelection, ttsConfig)
+  }, [
+    activeActionId,
+    activeSession?.id,
+    cleanSelection,
+    isOpen,
+    playTextToSpeech,
+    popoverSessionKey,
+    selectionToolbarConfig.wordHighlight.autoSpeak,
+    selectionToolbarConfig.wordHighlight.enabled,
+    ttsConfig,
+  ])
+
+  useEffect(() => {
+    if (
+      !isOpen ||
+      activeActionId !== BUILT_IN_DICTIONARY_ACTION_ID ||
+      !cleanSelection ||
+      displayedIsRunning ||
+      displayedError ||
+      !displayedResult ||
+      !selectionToolbarConfig.wordHighlight.enabled ||
+      !selectionToolbarConfig.wordHighlight.autoSave
+    ) {
+      return
+    }
+
+    const sessionKey = `${popoverSessionKey}:${activeSession?.id ?? 0}`
+    if (autoSavedSessionRef.current === sessionKey) return
+    autoSavedSessionRef.current = sessionKey
+    void saveVocabularyEntry({
+      term: cleanSelection,
+      context: paragraphsText,
+      sourceTitle: titleText,
+      sourceUrl: window.location.href,
+    }).catch((saveError) => {
+      toastManager.add({
+        type: "error",
+        title: i18n.t("wordHighlight.failed"),
+        description: saveError instanceof Error ? saveError.message : String(saveError),
+      })
+    })
+  }, [
+    activeActionId,
+    activeSession?.id,
+    cleanSelection,
+    displayedError,
+    displayedIsRunning,
+    displayedResult,
+    isOpen,
+    paragraphsText,
+    popoverSessionKey,
+    selectionToolbarConfig.wordHighlight.autoSave,
+    selectionToolbarConfig.wordHighlight.enabled,
+    titleText,
+  ])
+
+  useEffect(() => {
     if (!isOpen || !executionPlan.error || executionPlan.executionContext) {
       return
     }
@@ -422,10 +527,22 @@ export function SelectionCustomActionProvider({ children }: { children: ReactNod
           >
             {activeAction && (
               <>
+                {activeAction.id === BUILT_IN_DICTIONARY_ACTION_ID && cleanSelection && (
+                  <SaveVocabularyButton
+                    term={cleanSelection}
+                    context={paragraphsText}
+                    title={titleText}
+                  />
+                )}
                 <SaveToGoogleSheetsButton
                   action={activeAction}
                   isRunning={displayedIsRunning}
                   result={displayedResult}
+                  vocabulary={
+                    activeAction.id === BUILT_IN_DICTIONARY_ACTION_ID && cleanSelection
+                      ? { term: cleanSelection, context: paragraphsText, title: titleText }
+                      : undefined
+                  }
                 />
                 <CustomActionToolButton action={activeAction} />
               </>

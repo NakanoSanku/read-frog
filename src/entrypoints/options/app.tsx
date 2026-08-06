@@ -29,6 +29,11 @@ const FloatingButtonPage = lazy(() =>
 const SelectionToolbarPage = lazy(() =>
   import("./pages/selection-toolbar").then((module) => ({ default: module.SelectionToolbarPage })),
 )
+const WordHighlightCustomCssPage = lazy(() =>
+  import("./pages/selection-toolbar/word-highlight/custom-css").then((module) => ({
+    default: module.WordHighlightCustomCssPage,
+  })),
+)
 const ContextMenuPage = lazy(() =>
   import("./pages/context-menu").then((module) => ({ default: module.ContextMenuPage })),
 )
@@ -112,6 +117,7 @@ const ROUTE_COMPONENTS: Record<RoutePath, ComponentType> = {
   "/video-subtitles": VideoSubtitlesPage,
   "/floating-button": FloatingButtonPage,
   "/selection-toolbar": SelectionToolbarPage,
+  "/selection-toolbar/word-highlight-css": WordHighlightCustomCssPage,
   "/context-menu": ContextMenuPage,
   "/input-translation": InputTranslationPage,
   "/tts": TextToSpeechPage,

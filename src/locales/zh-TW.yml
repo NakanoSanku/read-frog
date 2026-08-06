@@ -526,6 +526,33 @@ options:
         googleSheetsDescription: 使用 AI 供應商進行劃詞翻譯後，推薦可儲存到 Google Sheets 的詞條
         action: 指令
         actionDescription: 用於產生儲存建議的指令
+    wordHighlight:
+      title: 生詞醒目提示
+      enable:
+        title: 醒目提示已收藏詞彙
+        description: 在網頁和字幕中持續醒目提示透過詞典收藏的單字或片語
+      autoSave:
+        title: 查詢後自動收藏
+        description: 詞典成功查詢單字或片語後，自動加入生詞本
+      autoSpeak:
+        title: 查詢時自動發音
+        description: 開啟詞典時，自動朗讀選取或已醒目提示的詞彙
+      customStyle:
+        title: 使用自訂 CSS
+        description: 使用自己的 CSS 樣式取代預設醒目提示效果
+      cssEditor:
+        title: 醒目提示 CSS 編輯器
+        description: 自訂網頁與字幕中的 .read-frog-word-highlight
+        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
+      preset:
+        title: 醒目提示樣式
+        description: 選擇生詞在頁面上的顯示方式
+        highlight: 螢光筆醒目提示
+        underline: 波浪底線
+        enlarge: 放大
+      preview: 預覽
+      previewBefore: 閱讀時，每個生詞都可能帶來
+      previewAfter: 般的意外收穫。
     display:
       title: 顯示
       opacity:
@@ -1198,6 +1225,13 @@ speak:
   noTextSelected: 未選取文字
   openaiNotConfigured: 尚未設定或啟用 OpenAI 提供者
   openaiApiKeyNotConfigured: 尚未設定 OpenAI API 金鑰
+wordHighlight:
+  save: 收藏單字
+  remove: 取消收藏
+  saved: 已收藏並開始醒目提示
+  removed: 已取消收藏
+  failed: 更新生詞本失敗
+  clickToLookUp: 按一下快速查詢這個生詞
 action:
   copy: 複製
   copied: 已複製

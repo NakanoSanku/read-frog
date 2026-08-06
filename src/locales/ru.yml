@@ -524,6 +524,33 @@ options:
         description: После перевода выделенного текста с помощью ИИ-провайдера предлагать слова для сохранения в Notebase
         action: Действие
         actionDescription: Действие, которое формирует предложение
+    wordHighlight:
+      title: Подсветка сохранённых слов
+      enable:
+        title: Подсвечивать сохранённые слова
+        description: Всегда подсвечивать на веб-страницах и в субтитрах слова и фразы, сохранённые из Словаря
+      autoSave:
+        title: Сохранять после поиска
+        description: Автоматически добавлять слово или фразу после успешного поиска в Словаре
+      autoSpeak:
+        title: Произносить при поиске
+        description: Автоматически произносить выбранное или подсвеченное выражение при открытии Словаря
+      customStyle:
+        title: Использовать свой CSS
+        description: Оформлять сохранённые слова собственным CSS вместо готового стиля
+      cssEditor:
+        title: CSS-редактор подсветки
+        description: Настройте .read-frog-word-highlight на веб-страницах и в субтитрах
+        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
+      preset:
+        title: Стиль подсветки
+        description: Выберите, как сохранённые слова выделяются на странице
+        highlight: Маркер
+        underline: Волнистое подчёркивание
+        enlarge: Увеличение
+      preview: Предпросмотр
+      previewBefore: Каждое новое слово может привести к
+      previewAfter: во время чтения.
     display:
       title: Отображение
       opacity:
@@ -1041,6 +1068,13 @@ speak:
   noTextSelected: Текст не выделен
   openaiNotConfigured: Провайдер OpenAI не настроен или не включён
   openaiApiKeyNotConfigured: API-ключ OpenAI не настроен
+wordHighlight:
+  save: Сохранить слово
+  remove: Удалить из сохранённых
+  saved: Слово сохранено, подсветка включена
+  removed: Слово удалено из сохранённых
+  failed: Не удалось обновить сохранённые слова
+  clickToLookUp: Нажмите, чтобы найти это сохранённое слово
 action:
   copy: Копировать
   copied: Скопировано

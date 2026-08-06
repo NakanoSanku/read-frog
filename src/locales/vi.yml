@@ -524,6 +524,33 @@ options:
         description: Sau khi dịch vùng chọn bằng nhà cung cấp AI, gợi ý các từ để lưu vào Notebase
         action: Hành động
         actionDescription: Hành động tạo ra gợi ý
+    wordHighlight:
+      title: Tô sáng từ đã lưu
+      enable:
+        title: Tô sáng từ đã lưu
+        description: Luôn tô sáng các từ và cụm từ đã lưu từ Từ điển trên trang web và phụ đề
+      autoSave:
+        title: Lưu sau khi tra cứu
+        description: Tự động thêm từ hoặc cụm từ sau khi tra cứu Từ điển thành công
+      autoSpeak:
+        title: Phát âm khi tra cứu
+        description: Tự động phát âm từ được chọn hoặc tô sáng khi mở Từ điển
+      customStyle:
+        title: Dùng CSS tùy chỉnh
+        description: Trang trí từ đã lưu bằng CSS của bạn thay cho kiểu có sẵn
+      cssEditor:
+        title: Trình sửa CSS tô sáng
+        description: Tùy chỉnh .read-frog-word-highlight trên trang web và phụ đề
+        placeholder: ".read-frog-word-highlight {\n  background: #fde68a !important;\n  font-size: 1.1em !important;\n}"
+      preset:
+        title: Kiểu tô sáng
+        description: Chọn cách làm nổi bật từ đã lưu trên trang
+        highlight: Bút đánh dấu
+        underline: Gạch chân lượn sóng
+        enlarge: Phóng to
+      preview: Xem trước
+      previewBefore: Mỗi từ mới có thể dẫn đến
+      previewAfter: khi bạn đọc.
     display:
       title: Hiển thị
       opacity:
@@ -1041,6 +1068,13 @@ speak:
   noTextSelected: Không có văn bản nào được chọn
   openaiNotConfigured: Nhà cung cấp OpenAI chưa được cấu hình hoặc chưa được bật
   openaiApiKeyNotConfigured: API key OpenAI chưa được cấu hình
+wordHighlight:
+  save: Lưu từ
+  remove: Xóa khỏi từ đã lưu
+  saved: Đã lưu từ và bật tô sáng
+  removed: Đã xóa từ khỏi danh sách đã lưu
+  failed: Không thể cập nhật từ đã lưu
+  clickToLookUp: Nhấp để tra cứu từ đã lưu này
 action:
   copy: Sao chép
   copied: Đã sao chép

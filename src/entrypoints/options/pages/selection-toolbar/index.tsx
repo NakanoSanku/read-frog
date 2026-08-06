@@ -5,6 +5,7 @@ import { PageLayout } from "../../components/page-layout"
 import { ActionsSection } from "./actions"
 import { DisplaySection } from "./display"
 import { EnableItem } from "./enable-item"
+import { WordHighlightSection } from "./word-highlight"
 
 export function SelectionToolbarPage() {
   return (
@@ -22,6 +23,7 @@ export function SelectionToolbarPage() {
       </GradientBackground>
       <EnableItem />
       <ActionsSection />
+      <WordHighlightSection />
       <DisplaySection />
     </PageLayout>
   )
